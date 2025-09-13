@@ -7,8 +7,34 @@ import {
   SectionList,
   ViewStyle,
   TextStyle,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+// Example Dashboard screen (replace with your real one)
+function Dashboard() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#2C6E49' }}>
+        Dashboard Screen
+      </Text>
+    </SafeAreaView>
+  );
+}
+
+// --- Add new DashboardCosts screen ---
+function DashboardCosts() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#2C6E49' }}>
+        Dashboard - Costs
+      </Text>
+    </SafeAreaView>
+  );
+}
+
 
 type Item = {
   key: string;
@@ -23,6 +49,7 @@ type Section = {
   data: Item[];
 };
 
+// --- Sections Data ---
 const remindersSections: Section[] = [
   {
     title: 'Reminders',
@@ -54,42 +81,66 @@ const remindersSections: Section[] = [
         label: 'Orange',
         expDate: '2024-10-05',
         containerStyle: { backgroundColor: '#83BD75' },
-        textStyle: { color: '#fff' },
+        textStyle: { color: '#2C6E49' },
       },
     ],
   },
 ];
 
-const otherSections: Section[] = [
+const foodWaste: Section[] = [
   {
     title: 'Food Waste',
     data: [
       {
         key: 'apple-fw',
         label: 'You saved 5 apples from food waste this week! 🍏',
-        containerStyle: { backgroundColor: '#EAF8E6' },
-        textStyle: { color: '#2C6E49' },
-      },
-    ],
-  },
-  {
-    title: 'Costs',
-    data: [
-      {
-        key: 'apple-cost',
-        label: 'You saved $10.00 on apples this week! 💰',
-        containerStyle: { backgroundColor: '#EAF8E6' },
+        containerStyle: {
+          backgroundColor: '#EAF8E6',
+          paddingVertical: 24,
+          paddingHorizontal: 20,
+          minHeight: 100,
+          borderRadius: 20,
+        },
         textStyle: { color: '#2C6E49' },
       },
     ],
   },
 ];
 
-export default function CommunityLayout() {
+const costs: Section[] = [
+  {
+    title: 'Costs',
+    data: [
+      {
+        key: 'apple-cost',
+        label: 'You saved $10.00 on apples this week! 💰',
+        containerStyle: {
+          backgroundColor: '#EAF8E6',
+          paddingVertical: 24,
+          paddingHorizontal: 20,
+          minHeight: 100,
+          borderRadius: 20,
+        },
+        textStyle: { color: '#2C6E49' },
+      },
+    ],
+  },
+];
+
+// Merge all into one SectionList
+const sections: Section[] = [
+  ...remindersSections,
+  ...foodWaste,
+  ...costs,
+];
+
+function CommunityLayout({ navigation }: { navigation: any }) {
   const renderItem = ({ item, section }: { item: Item; section: Section }) => {
     const isReminderOrUntitled = section.title === 'Reminders' || !section.title;
+    const showArrow = section.title === 'Food Waste' || section.title === 'Costs';
+    const isClickable = section.title === 'Food Waste' || section.title === 'Costs';
 
-    return (
+    const Content = (
       <View
         style={[
           styles.item,
@@ -120,9 +171,38 @@ export default function CommunityLayout() {
               {item.expDate}
             </Text>
           )}
+
+          {showArrow && (
+            <MaterialIcons
+              name="arrow-forward-ios"
+              size={20}
+              color="#2C6E49"
+              style={[styles.arrowIcon, { marginLeft: -5 }]}
+            />
+          )}
         </View>
       </View>
     );
+
+    if (isClickable) {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        if (section.title === 'Food Waste') {
+          navigation.navigate('Dashboard');
+        } else if (section.title === 'Costs') {
+          navigation.navigate('DashboardCosts');
+        }
+      }}
+      activeOpacity={0.7}
+    >
+      {Content}
+    </TouchableOpacity>
+  );
+}
+
+
+    return Content;
   };
 
   const renderSectionHeader = ({ section: { title } }: { section: Section }) =>
@@ -131,36 +211,51 @@ export default function CommunityLayout() {
   return (
     <SafeAreaView style={styles.container}>
       <SectionList
-        sections={remindersSections}
+        sections={sections}
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         contentContainerStyle={styles.listContent}
         SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
         style={styles.list}
+        stickySectionHeadersEnabled={true}
       />
-
-      <View style={styles.spacer} />
-
-      <SectionList
-        sections={otherSections}
-        keyExtractor={(item) => item.key}
-        renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        contentContainerStyle={styles.listContent}
-        SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
-        style={styles.list}
-      />
-
       <ExpoStatusBar style="dark" />
     </SafeAreaView>
   );
 }
 
+// --- Navigation Root ---
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Community"
+        component={CommunityLayout}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{ title: 'Dashboard' }}
+      />
+      <Stack.Screen
+        name="DashboardCosts"
+        component={DashboardCosts}
+        options={{ title: 'Costs Dashboard' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+
+// --- Styles ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EAF8E6', // Soft eco-friendly green
+    backgroundColor: '#EAF8E6',
     paddingHorizontal: 10,
   },
   item: {
@@ -169,8 +264,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     borderRadius: 16,
     justifyContent: 'center',
-
-    // Soft shadow for "floating" card look
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -187,6 +280,7 @@ const styles = StyleSheet.create({
     color: '#2C6E49',
     paddingHorizontal: 8,
     paddingVertical: 4,
+    backgroundColor: '#EAF8E6',
   },
   sectionSeparator: {
     height: 8,
@@ -197,9 +291,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 12,
   },
-  spacer: {
-    height: 30,
-  },
   rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -209,5 +300,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     opacity: 0.8,
+  },
+  arrowIcon: {
+    marginLeft: 3,
+    alignSelf: 'center',
   },
 });

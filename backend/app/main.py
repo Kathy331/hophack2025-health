@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from routes import gem_route, user_route 
-from app.routes import gem_route, user_route
+from routes import gem_route, user_route, items_route
 
 app = FastAPI()
 

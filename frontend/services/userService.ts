@@ -1,4 +1,4 @@
-const backendUrl = "https://11a9462166a6.ngrok-free.app"; // replace with your backend
+const backendUrl = "https://1f517d5f5d00.ngrok-free.app"; // replace with your backend
 
 export interface Recipe {
   id?: number;  // recipe_id from database
@@ -59,4 +59,31 @@ export const deleteRecipeFromSupabase = async (recipe: Recipe, userId: string) =
   });
   if (!response.ok) throw new Error("Failed to delete recipe");
   return response.json();
+};
+
+export interface RecipeSearchFilters {
+  searchQuery?: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard' | 'All';
+  minServings?: number;
+  userId: string; // to get recipes for the specific user
+}
+
+export const searchRecipes = async (filters: RecipeSearchFilters) => {
+  try {
+    const response = await fetch(`${backendUrl}/user/search_recipes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(filters),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to search recipes: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data as Recipe[];
+  } catch (error: any) {
+    console.error('Error searching recipes:', error);
+    return [];
+  }
 };
