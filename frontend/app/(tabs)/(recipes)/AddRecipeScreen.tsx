@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
   Alert,
   ActivityIndicator,
-  Linking
+  Linking,
 } from 'react-native';
 
 const backendUrl = "https://b6b2e8acef0e.ngrok-free.app";
@@ -29,21 +29,32 @@ interface ApiResponse {
   transcript?: string;
 }
 
-export default function RecipesScreen() {
+export default function AddRecipeScreen() {
   const [videoUrl, setVideoUrl] = useState('');
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Manual input state
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualRecipe, setManualRecipe] = useState<Recipe>({
+    title: '',
+    ingredients: [''],
+    steps: [''],
+    cookTime: '',
+    servings: 1,
+    difficulty: '',
+  });
+
   const validateVideoUrl = (url: string): boolean => {
     const patterns = [
       /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+/,
       /^https?:\/\/(www\.)?instagram\.com\/(reel|p)\/.+/,
       /^https?:\/\/(www\.)?tiktok\.com\/@.+\/video\/.+/,
-      /^https?:\/\/(vm\.)?tiktok\.com\/.+/
+      /^https?:\/\/(vm\.)?tiktok\.com\/.+/,
     ];
-    return patterns.some(pattern => pattern.test(url));
+    return patterns.some((pattern) => pattern.test(url));
   };
 
   const getPlatform = (url: string): string => {
@@ -130,6 +141,49 @@ export default function RecipesScreen() {
     if (videoUrl && validateVideoUrl(videoUrl)) Linking.openURL(videoUrl);
   };
 
+  // Manual input handlers
+  const handleManualChange = (field: keyof Recipe, value: any) => {
+    setManualRecipe({ ...manualRecipe, [field]: value });
+  };
+
+  const handleManualIngredientChange = (idx: number, value: string) => {
+    const newIngredients = [...manualRecipe.ingredients];
+    newIngredients[idx] = value;
+    setManualRecipe({ ...manualRecipe, ingredients: newIngredients });
+  };
+
+  const handleManualStepChange = (idx: number, value: string) => {
+    const newSteps = [...manualRecipe.steps];
+    newSteps[idx] = value;
+    setManualRecipe({ ...manualRecipe, steps: newSteps });
+  };
+
+  const addManualIngredient = () => {
+    setManualRecipe({ ...manualRecipe, ingredients: [...manualRecipe.ingredients, ''] });
+  };
+
+  const addManualStep = () => {
+    setManualRecipe({ ...manualRecipe, steps: [...manualRecipe.steps, ''] });
+  };
+
+  const submitManualRecipe = () => {
+    if (!manualRecipe.title.trim()) {
+      Alert.alert('Please enter a recipe title.');
+      return;
+    }
+    if (manualRecipe.ingredients.length === 0 || manualRecipe.ingredients.some(i => !i.trim())) {
+      Alert.alert('Please enter at least one ingredient.');
+      return;
+    }
+    if (manualRecipe.steps.length === 0 || manualRecipe.steps.some(s => !s.trim())) {
+      Alert.alert('Please enter at least one step.');
+      return;
+    }
+    setRecipe(manualRecipe);
+    setStatusMessage('✅ Manual recipe added!');
+    setShowManualInput(false);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -137,42 +191,124 @@ export default function RecipesScreen() {
         <Text style={styles.subtitle}>Turn cooking videos into easy-to-follow recipes</Text>
       </View>
 
-      <View style={styles.inputSection}>
-        <Text style={styles.label}>Paste Video URL</Text>
-        <TextInput
-          style={styles.input}
-          value={videoUrl}
-          onChangeText={setVideoUrl}
-          placeholder="https://youtube.com/watch?v=..."
-          placeholderTextColor="#6b8f71"
-          multiline
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+      {/* Manual Input Button */}
+      <View style={{ alignItems: 'center', marginTop: 10 }}>
+        <TouchableOpacity
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => setShowManualInput(!showManualInput)}
+        >
+          <Text style={styles.secondaryButtonText}>
+            {showManualInput ? 'Cancel Manual Input' : '➕ Add Recipe Manually'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[styles.button, styles.primaryButton]}
-            onPress={generateRecipe}
-            disabled={loading}
-          >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Generate</Text>}
+      {/* Manual Input Form */}
+      {showManualInput && (
+        <View style={styles.manualInputSection}>
+          <Text style={styles.sectionTitle}>Manual Recipe Entry</Text>
+          <TextInput
+            style={styles.input}
+            value={manualRecipe.title}
+            onChangeText={text => handleManualChange('title', text)}
+            placeholder="Recipe Title"
+          />
+          <TextInput
+            style={styles.input}
+            value={manualRecipe.cookTime}
+            onChangeText={text => handleManualChange('cookTime', text)}
+            placeholder="Cook Time (e.g. 30 minutes)"
+          />
+          <TextInput
+            style={styles.input}
+            value={manualRecipe.difficulty}
+            onChangeText={text => handleManualChange('difficulty', text)}
+            placeholder="Difficulty (Easy/Medium/Hard)"
+          />
+          <TextInput
+            style={styles.input}
+            value={manualRecipe.servings.toString()}
+            onChangeText={text => handleManualChange('servings', parseInt(text) || 1)}
+            placeholder="Servings"
+            keyboardType="numeric"
+          />
+
+          <Text style={styles.sectionTitle}>Ingredients</Text>
+          {manualRecipe.ingredients.map((ingredient, idx) => (
+            <TextInput
+              key={idx}
+              style={styles.input}
+              value={ingredient}
+              onChangeText={text => handleManualIngredientChange(idx, text)}
+              placeholder={`Ingredient ${idx + 1}`}
+            />
+          ))}
+          <TouchableOpacity style={styles.addFieldButton} onPress={addManualIngredient}>
+            <Text style={styles.addFieldButtonText}>+ Add Ingredient</Text>
           </TouchableOpacity>
 
-          {videoUrl && validateVideoUrl(videoUrl) && (
+          <Text style={styles.sectionTitle}>Steps</Text>
+          {manualRecipe.steps.map((step, idx) => (
+            <TextInput
+              key={idx}
+              style={styles.input}
+              value={step}
+              onChangeText={text => handleManualStepChange(idx, text)}
+              placeholder={`Step ${idx + 1}`}
+            />
+          ))}
+          <TouchableOpacity style={styles.addFieldButton} onPress={addManualStep}>
+            <Text style={styles.addFieldButtonText}>+ Add Step</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.primaryButton, { marginTop: 10 }]}
+            onPress={submitManualRecipe}
+          >
+            <Text style={styles.buttonText}>Save Recipe</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Video URL Section */}
+      {!showManualInput && (
+        <View style={styles.inputSection}>
+          <Text style={styles.label}>Paste Video URL</Text>
+          <TextInput
+            style={styles.input}
+            value={videoUrl}
+            onChangeText={setVideoUrl}
+            placeholder="https://youtube.com/watch?v=..."
+            placeholderTextColor="#6b8f71"
+            multiline
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <View style={styles.buttonRow}>
             <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={openVideoUrl}
+              style={[styles.button, styles.primaryButton]}
+              onPress={generateRecipe}
+              disabled={loading}
             >
-              <Text style={styles.secondaryButtonText}>Open Video</Text>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Generate</Text>}
             </TouchableOpacity>
+
+            {videoUrl && validateVideoUrl(videoUrl) && (
+              <TouchableOpacity
+                style={[styles.button, styles.secondaryButton]}
+                onPress={openVideoUrl}
+              >
+                <Text style={styles.secondaryButtonText}>Open Video</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {videoUrl && validateVideoUrl(videoUrl) && (
+            <Text style={styles.platformText}>Platform detected: {getPlatform(videoUrl)}</Text>
           )}
         </View>
-
-        {videoUrl && validateVideoUrl(videoUrl) && (
-          <Text style={styles.platformText}>Platform detected: {getPlatform(videoUrl)}</Text>
-        )}
-      </View>
+      )}
 
       {statusMessage && <Text style={styles.statusText}>{statusMessage}</Text>}
 
@@ -225,7 +361,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, color: '#2d6a4f', marginTop: 4 },
   inputSection: { padding: 20 },
   label: { fontSize: 16, fontWeight: '600', color: '#1b4332', marginBottom: 8 },
-  input: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 2, borderColor: '#95d5b2', padding: 15, fontSize: 16, minHeight: 60 },
+  input: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 2, borderColor: '#95d5b2', padding: 15, fontSize: 16, minHeight: 40, marginBottom: 8 },
   buttonRow: { flexDirection: 'row', marginTop: 15, gap: 10 },
   button: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   primaryButton: { backgroundColor: '#52b788' },
@@ -246,4 +382,7 @@ const styles = StyleSheet.create({
   step: { flexDirection: 'row', marginBottom: 12 },
   stepNumber: { width: 30, height: 30, backgroundColor: '#52b788', color: '#fff', textAlign: 'center', lineHeight: 30, borderRadius: 15, fontWeight: 'bold', marginRight: 10 },
   stepText: { flex: 1, fontSize: 16, color: '#1b4332' },
+  manualInputSection: { backgroundColor: '#f0fff4', margin: 15, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3 },
+  addFieldButton: { backgroundColor: '#d8f3dc', borderRadius: 8, padding: 10, alignItems: 'center', marginVertical: 6 },
+  addFieldButtonText: { color: '#40916c', fontWeight: 'bold' },
 });
