@@ -4,12 +4,8 @@ import { Platform } from 'react-native';
 
 import { HapticTab } from '../../components/haptic-tab';
 import { IconSymbol } from '../../components/ui/icon-symbol';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '../../constants/theme';
 import { useColorScheme } from '../../hooks/use-color-scheme';
-import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -28,6 +24,13 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
+        name="(add)"
+        options={{
+          title: 'Add',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="(home)"
         options={{
           title: 'Home',
@@ -38,28 +41,22 @@ export default function TabLayout() {
         name="(inventory)"
         options={{
           title: 'Inventory',
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="food-apple-outline" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
+
       <Tabs.Screen
-        name="(add)"
+        name="(profile)"
         options={{
-          title: 'Add',
-          tabBarIcon: ({ color }) => <AntDesign size={24} name="plus-circle" color={color} />,
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="(recipes)"
         options={{
           title: 'Recipes',
-          tabBarIcon: ({ color }) => <MaterialIcons name="list-alt" size={24} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="(profile)"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <Ionicons name="person-sharp" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       
