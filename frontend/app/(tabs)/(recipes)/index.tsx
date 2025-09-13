@@ -11,7 +11,7 @@ import {
   Linking
 } from 'react-native';
 
-const backendUrl = "https://f6b476e1ac0f.ngrok-free.app";
+const backendUrl = "https://b6b2e8acef0e.ngrok-free.app";
 
 interface Recipe {
   title: string;
