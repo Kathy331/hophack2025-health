@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from gem_service import parse_receipt
+from gem_service import parse_receipt, analyze_image  # <-- import analyze_image
 
 # Load env vars (Gemini API key, etc.)
 load_dotenv()
@@ -18,7 +18,14 @@ app.add_middleware(
 )
 
 @app.post("/parse-receipt")
-async def parse_receipt_endpoint(file: UploadFile = File(...)):
+async def parse_receipt_endpoint(file: UploadFile = File(...)
+):
     image_bytes = await file.read()
     parsed_json = parse_receipt(image_bytes)
     return {"parsed": parsed_json}
+
+@app.post("/analyze-image")
+async def analyze_image_endpoint(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    result_json = analyze_image(image_bytes)
+    return {"analysis": result_json}

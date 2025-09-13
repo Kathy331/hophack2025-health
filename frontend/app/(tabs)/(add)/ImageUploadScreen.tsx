@@ -10,11 +10,13 @@ import {
   Dimensions 
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { analyzeImageWithGemini } from '../../../services/geminiService'; // Make sure this path is correct
 
 const { width } = Dimensions.get('window');
 
 export default function ImageUploadScreen() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -122,54 +124,44 @@ export default function ImageUploadScreen() {
   const analyzeImagesWithGemini = async () => {
     if (selectedImages.length === 0) return;
 
+    setLoading(true);
     try {
-      // Show loading state
       Alert.alert('Processing...', 'Analyzing your images with AI. This may take a moment.');
 
-      // Import the service (you'll need to create this file)
-      const { geminiService } = await import('../../../services/geminiService');
-
       if (selectedImages.length === 1) {
-        const result = await geminiService.analyzeImage(
-          selectedImages[0],
-          'Analyze this image and describe what you see in detail'
-        );
-        
-        Alert.alert(
-          'AI Analysis Result',
-          result.analysis,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Optionally clear images or save results
-                console.log('Analysis completed:', result);
-              }
-            }
-          ]
-        );
+        const result = await analyzeImageWithGemini(selectedImages[0]);
+        // Check for empty items array
+        if (!result || !result.items || result.items.length === 0) {
+          Alert.alert(
+            'No Food Items Found',
+            'The AI could not detect any food items in your image. Please try a clearer photo.',
+            [{ text: 'OK' }]
+          );
+        } else {
+          Alert.alert(
+            'AI Analysis Result',
+            JSON.stringify(result, null, 2),
+            [{ text: 'OK' }]
+          );
+        }
       } else {
-        const result = await geminiService.analyzeMultipleImages(
-          selectedImages,
-          'Analyze these images and describe what you see in each one'
-        );
-        
         let analysisText = '';
-        result.results.forEach((img, index) => {
-          analysisText += `Image ${index + 1}:\n${img.analysis}\n\n`;
-        });
-
+        for (let i = 0; i < selectedImages.length; i++) {
+          try {
+            const result = await analyzeImageWithGemini(selectedImages[i]);
+            if (!result || !result.items || result.items.length === 0) {
+              analysisText += `Image ${i + 1}: No food items found.\n\n`;
+            } else {
+              analysisText += `Image ${i + 1}:\n${JSON.stringify(result, null, 2)}\n\n`;
+            }
+          } catch (imgError) {
+            analysisText += `Image ${i + 1}: Error analyzing image.\n\n`;
+          }
+        }
         Alert.alert(
           'AI Analysis Results',
           analysisText,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('Multiple analysis completed:', result);
-              }
-            }
-          ]
+          [{ text: 'OK' }]
         );
       }
     } catch (error) {
@@ -179,6 +171,8 @@ export default function ImageUploadScreen() {
         [{ text: 'OK' }]
       );
       console.error('Gemini analysis error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -210,9 +204,9 @@ export default function ImageUploadScreen() {
       )}
 
       {selectedImages.length > 0 && (
-        <TouchableOpacity style={styles.uploadButton} onPress={uploadPhotos}>
+        <TouchableOpacity style={styles.uploadButton} onPress={uploadPhotos} disabled={loading}>
           <Text style={styles.uploadButtonText}>
-            Upload {selectedImages.length} Photo{selectedImages.length > 1 ? 's' : ''}
+            {loading ? 'Processing...' : `Upload ${selectedImages.length} Photo${selectedImages.length > 1 ? 's' : ''}`}
           </Text>
         </TouchableOpacity>
       )}
