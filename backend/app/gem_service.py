@@ -4,6 +4,7 @@ import json
 from PIL import Image
 from dotenv import load_dotenv
 import google.generativeai as genai
+import re
 
 load_dotenv()
 
@@ -16,22 +17,47 @@ def parse_receipt(image_bytes: bytes) -> dict:
     # Convert bytes to a PIL Image
     image = Image.open(io.BytesIO(image_bytes))
 
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     prompt = (
-        "Extract food items and their estimated shelf life in days. "
+        "1. Extract food items and their estimated shelf life in days. 2. Extract the date the items were bought and use this to estimate the shelf life 3. Extract the price of the items"
         "Return JSON strictly in this format:\n"
-        "{ 'items': [ { 'name': str, 'shelf_life_days': int } ] }"
+        "{ 'items': [ { 'name': str, 'shelf_life_days': int , 'date_bought': YYYY-MM-DD, 'price': number} ] }"
     )
 
     # Generate content
     response = model.generate_content([prompt, image])
 
-    # Parse text to JSON
-    try:
-        parsed_json = json.loads(response.text)
-    except Exception:
-        print("Failed to parse Gemini response as JSON:", response.text)
-        parsed_json = {}
+    response = model.generate_content([prompt, image])
+    print(safe_parse_gemini_response(response.text))
+    return safe_parse_gemini_response(response.text)
 
-    return parsed_json
+
+def analyze_image(image_bytes: bytes) -> dict:
+    image = Image.open(io.BytesIO(image_bytes))
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    prompt = (
+        "Extract food items from the image and their estimated shelf life in days. "
+        "Return **ONLY** valid JSON in this format:\n"
+        '{"items": [{"name": "string", "shelf_life_days": int}]}'
+    )
+    response = model.generate_content([prompt, image])
+    print(safe_parse_gemini_response(response.text))
+    return safe_parse_gemini_response(response.text)
+
+
+
+#fixes critical error where front end returns empty json bc there were spaces in the gemini response. Deletes any whitespace
+def safe_parse_gemini_response(response_text: str) -> dict:
+    """
+    Extracts JSON object from Gemini response text safely.
+    """
+    match = re.search(r"\{.*\}", response_text, re.DOTALL)
+    if not match:
+        print("No JSON object found in Gemini response:", response_text)
+        return {}
+    try:
+        return json.loads(match.group(0))
+    except json.JSONDecodeError:
+        print("Failed to decode JSON from Gemini response:", response_text)
+        return {}

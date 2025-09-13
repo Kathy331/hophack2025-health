@@ -1,0 +1,18 @@
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6          # For file uploads
+google-generativeai>=0.3.0
+python-dotenv>=1.0.0
+Pillow>=10.0.0
+pydantic>=2.5.0
+
+
+# NEW dependencies for video processing
+youtube-transcript-api>=0.6.0     # Get YouTube captions (FREE!)
+yt-dlp>=2023.10.0                # Download video/audio from multiple platforms
+openai-whisper>=20231117         # Audio transcription (fallback)
+ffmpeg-python>=0.2.0             # Audio processing
+
+# Optional: For production deployment
+gunicorn>=21.2.0                 # WSGI server alternative
+# redis>=5.0.0                     # Caching (optional)
