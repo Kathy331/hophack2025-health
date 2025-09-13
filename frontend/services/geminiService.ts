@@ -1,4 +1,4 @@
-const backendUrl = "https://6c266bbd85cb.ngrok-free.app";
+const backendUrl = "https://11a9462166a6.ngrok-free.app";
 
 export const sendReceiptToBackend = async (imageUri: string) => {
   try {
