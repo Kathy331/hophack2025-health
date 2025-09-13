@@ -10,6 +10,9 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
+import { supabase } from '../../../supabaseClient';
 
 const backendUrl = "https://f7406815deb6.ngrok-free.app";
 
@@ -35,6 +38,7 @@ export default function AddRecipeScreen() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   // Manual input state
   const [showManualInput, setShowManualInput] = useState(false);
@@ -62,6 +66,27 @@ export default function AddRecipeScreen() {
     if (url.includes('instagram.com')) return 'Instagram';
     if (url.includes('tiktok.com')) return 'TikTok';
     return 'Unknown';
+  };
+  const handleBookmark = async () => {
+    // Get the current user from supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !recipe) {
+      Alert.alert("You must be logged in to save recipes.");
+      return;
+    }
+    try {
+      if (!isBookmarked) {
+        await saveRecipeToSupabase(recipe, user.id);
+        setIsBookmarked(true);
+        setStatusMessage("Recipe saved!");
+      } else {
+        await deleteRecipeFromSupabase(recipe, user.id);
+        setIsBookmarked(false);
+        setStatusMessage("Recipe removed from saved!");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to update bookmark.");
+    }
   };
 
   const generateRecipe = async () => {
@@ -93,7 +118,10 @@ export default function AddRecipeScreen() {
           (data.recipe && typeof data.recipe === 'object' && 'recipe' in data.recipe && typeof (data.recipe as any).recipe === 'object')
             ? (data.recipe as any).recipe
             : data.recipe;
-        setRecipe(recipeObj);
+        setRecipe({
+          ...recipeObj,
+          url: videoUrl  // Include the video URL in the recipe
+        });
         setStatusMessage('✅ Recipe generated successfully!');
         setTranscript(data.transcript || null);
       } else {
@@ -274,16 +302,32 @@ export default function AddRecipeScreen() {
       {!showManualInput && (
         <View style={styles.inputSection}>
           <Text style={styles.label}>Paste Video URL</Text>
-          <TextInput
-            style={styles.input}
-            value={videoUrl}
-            onChangeText={setVideoUrl}
-            placeholder="https://youtube.com/watch?v=..."
-            placeholderTextColor="#6b8f71"
-            multiline
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, { flex: 1, marginBottom: 0 }]}
+              value={videoUrl}
+              onChangeText={setVideoUrl}
+              placeholder="https://youtube.com/watch?v=..."
+              placeholderTextColor="#6b8f71"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {videoUrl ? (
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={() => {
+                  setVideoUrl('');
+                  setRecipe(null);
+                  setStatusMessage(null);
+                  setTranscript(null);
+                  setIsBookmarked(false);
+                }}
+              >
+                <MaterialIcons name="close" size={24} color="#52b788" />
+              </TouchableOpacity>
+            ) : null}
+          </View>
 
           <View style={styles.buttonRow}>
             <TouchableOpacity
@@ -321,6 +365,18 @@ export default function AddRecipeScreen() {
 
       {recipe && (
         <View style={styles.recipeSection}>
+          {/* Bookmark icon in top right */}
+          <TouchableOpacity
+            style={styles.bookmarkIcon}
+            onPress={handleBookmark}
+            accessibilityLabel={isBookmarked ? "Remove bookmark" : "Bookmark recipe"}
+          >
+            <MaterialIcons
+              name={isBookmarked ? "bookmark" : "bookmark-border"}
+              size={32}
+              color={isBookmarked ? "#52b788" : "#b7b7b7"}
+            />
+          </TouchableOpacity>
           <Text style={styles.recipeTitle}>{recipe.title || 'Unnamed Recipe'}</Text>
           <View style={styles.recipeMetrics}>
             <Text style={styles.metric}>⏱️ {recipe.cookTime}</Text>
@@ -328,17 +384,17 @@ export default function AddRecipeScreen() {
             <Text style={styles.metric}>📊 {recipe.difficulty}</Text>
           </View>
 
-          <Text style={styles.sectionTitle}>Ingredients</Text>
-          {recipe.ingredients.length > 0 ? (
-            recipe.ingredients.map((ingredient, idx) => (
-              <Text key={idx} style={styles.ingredient}>• {ingredient}</Text>
-            ))
-          ) : (
-            <Text style={styles.ingredient}>No ingredients found.</Text>
-          )}
+        <Text style={styles.sectionTitle}>Ingredients</Text>
+            {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
+              recipe.ingredients.map((ingredient, idx) => (
+                <Text key={idx} style={styles.ingredient}>• {ingredient}</Text>
+              ))
+            ) : (
+              <Text style={styles.ingredient}>No ingredients found.</Text>
+            )}
 
           <Text style={styles.sectionTitle}>Steps</Text>
-          {recipe.steps.length > 0 ? (
+          {Array.isArray(recipe.steps) && recipe.steps.length > 0 ? (
             recipe.steps.map((step, idx) => (
               <View key={idx} style={styles.step}>
                 <Text style={styles.stepNumber}>{idx + 1}</Text>
@@ -355,6 +411,16 @@ export default function AddRecipeScreen() {
 }
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 12,
+    padding: 4,
+  },
   container: { flex: 1, backgroundColor: '#e9f5ec' }, // soft green background
   header: { padding: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#1b4332' },
@@ -367,13 +433,15 @@ const styles = StyleSheet.create({
   primaryButton: { backgroundColor: '#52b788' },
   secondaryButton: { backgroundColor: '#fff', borderWidth: 2, borderColor: '#52b788' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  secondaryButtonText: { color: '#52b788', fontSize: 16, fontWeight: 'bold' },
+  secondaryButtonText: { color: '#52b788', fontSize: 16, fontWeight: 'bold', paddingHorizontal: 20 },
   platformText: { marginTop: 8, textAlign: 'center', color: '#40916c' },
   statusText: { textAlign: 'center', marginVertical: 10, fontWeight: '600', color: '#1b4332' },
   transcriptBox: { backgroundColor: '#d8f3dc', margin: 10, padding: 10, borderRadius: 12 },
   transcriptTitle: { fontWeight: 'bold', marginBottom: 5, color: '#1b4332' },
   transcriptText: { fontSize: 13, color: '#081c15' },
-  recipeSection: { backgroundColor: '#fff', margin: 10, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 },
+  recipeSection: { backgroundColor: '#fff', margin: 10, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.05,
+    shadowRadius: 5,
+    position: 'relative',},
   recipeTitle: { fontSize: 24, fontWeight: 'bold', color: '#1b4332', marginBottom: 12 },
   recipeMetrics: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#d8f3dc', borderRadius: 10, padding: 12, marginBottom: 20 },
   metric: { fontSize: 14, color: '#40916c', fontWeight: '600' },
@@ -385,4 +453,5 @@ const styles = StyleSheet.create({
   manualInputSection: { backgroundColor: '#f0fff4', margin: 15, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3 },
   addFieldButton: { backgroundColor: '#d8f3dc', borderRadius: 8, padding: 10, alignItems: 'center', marginVertical: 6 },
   addFieldButtonText: { color: '#40916c', fontWeight: 'bold' },
+  bookmarkIcon: { position: 'absolute', top: 16, right: 16, zIndex: 10 },
 });

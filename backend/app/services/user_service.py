@@ -24,3 +24,60 @@ async def create_profile_in_db(user_id: str, username: str, avatar: Optional[str
     except Exception as e:
         print("Unexpected error creating profile:", e)
         return {"error": str(e)}
+    
+async def save_recipe_in_db(user_id: str, recipe: dict):
+    try:
+        # 1. Insert into recipes table
+        cook_time = recipe.get("cookTime", "0 minutes")
+        # Handle time ranges by taking the average and using ~ for estimate
+        if '-' in cook_time:
+            times = cook_time.split('-')
+            numbers = []
+            for t in times:
+                try:
+                    num = int(''.join(filter(str.isdigit, t.strip())))
+                    numbers.append(num)
+                except:
+                    pass
+            if numbers:
+                # Take average and mark as estimate with ~
+                cook_time = f"~{sum(numbers) // len(numbers)} minutes"
+        elif not any(unit in cook_time.lower() for unit in ['minute', 'hour']):
+            try:
+                minutes = int(''.join(filter(str.isdigit, cook_time)))
+                cook_time = f"{minutes} minutes"
+            except:
+                cook_time = "0 minutes"
+
+        recipe_insert = {
+            "user_uuid": user_id,
+            "title": recipe.get("title", "Untitled"),
+            "cook_time": cook_time,  # Now with ~ for estimates
+            "difficulty": recipe.get("difficulty", "Easy"),
+            "servings": recipe.get("servings", 1),
+            "url": recipe.get("url", None)  # Save the video/source URL
+        }
+        recipe_resp = supabase.table("recipes").insert(recipe_insert).execute()
+        if recipe_resp.error:
+            return {"success": False, "error": recipe_resp.error.message}
+        recipe_id = recipe_resp.data[0]["id"]
+      # 2. Insert ingredients
+        ingredients = recipe.get("ingredients", [])
+        if ingredients:
+            ingredient_rows = [{"recipe_id": recipe_id, "ingredient": ing} for ing in ingredients]
+            ing_resp = supabase.table("recipe_ingredients").insert(ingredient_rows).execute()
+            if ing_resp.error:
+                return {"success": False, "error": ing_resp.error.message}
+
+        # 3. Insert steps
+        steps = recipe.get("steps", [])
+        if steps:
+            step_rows = [{"recipe_id": recipe_id, "step_number": i+1, "instruction": step} for i, step in enumerate(steps)]
+            step_resp = supabase.table("recipe_steps").insert(step_rows).execute()
+            if step_resp.error:
+                return {"success": False, "error": step_resp.error.message}
+
+        return {"success": True, "recipe_id": recipe_id}
+    except Exception as e:
+        print("Error saving recipe:", e)
+        return {"success": False, "error": str(e)}
