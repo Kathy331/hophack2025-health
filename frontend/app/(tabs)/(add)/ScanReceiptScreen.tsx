@@ -12,6 +12,8 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { sendReceiptToBackend } from '../../../services/geminiService';
 const { width } = Dimensions.get('window');
+import { supabase } from '../../../supabaseClient';
+
 
 export default function ScanReceiptScreen() {
   const [scannedReceipts, setScannedReceipts] = useState<string[]>([]);
@@ -95,27 +97,44 @@ export default function ScanReceiptScreen() {
     ]);
   };
 
-  const processReceipts = async () => {
-    if (scannedReceipts.length === 0) {
-      Alert.alert('No Receipts', 'Please scan or add at least one receipt.');
+
+const processReceipts = async () => {
+  if (scannedReceipts.length === 0) {
+    Alert.alert('No Receipts', 'Please scan or add at least one receipt.');
+    return;
+  }
+
+  try {
+    // 1️⃣ Get the logged-in user
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      Alert.alert('Not Authenticated', 'Please log in before uploading receipts.');
       return;
     }
+    const userId = data.user.id; // ✅ this is the UUID
+    console.log("Logged-in user ID:", userId);
 
-    try {
-      Alert.alert('Processing Receipts', `Processing ${scannedReceipts.length} receipt(s)...`);
+    Alert.alert('Processing Receipts', `Processing ${scannedReceipts.length} receipt(s)...`);
 
       const allParsedResults = [];
       for (const uri of scannedReceipts) {
-        const parsed = await sendReceiptToBackend(uri);
+        const parsed = await sendReceiptToBackend(uri, userId);
         allParsedResults.push(parsed);
       }
 
-      console.log("Parsed Receipts:", allParsedResults);
-      Alert.alert('Success', 'Receipts processed successfully! Check console for JSON.');
-    } catch {
-      Alert.alert('Error', 'Failed to process receipts. See console for details.');
-    }
-  };
+
+    console.log("Parsed Receipts:", allParsedResults);
+    Alert.alert('Success', 'Receipts processed successfully! Check console for JSON.');
+
+    // Optionally: clear receipts after processing
+    // setScannedReceipts([]);
+
+  } catch (error) {
+    console.error("Error processing receipts:", error);
+    Alert.alert('Error', 'Failed to process receipts. See console for details.');
+  }
+};
+
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -287,7 +306,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     width: '100%',
-    marginTop: 25,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },

@@ -1,6 +1,6 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
 
 import { HapticTab } from '../../components/haptic-tab';
 import { IconSymbol } from '../../components/ui/icon-symbol';
@@ -16,22 +16,22 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="(home)" // default tab after login
       screenOptions={{
         tabBarActiveTintColor:  '#5c8233ff',
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-          },
+          ios: { position: "absolute" },
           default: {},
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="(home)"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Add",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus.circle.fill" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -62,8 +62,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Ionicons name="person-sharp" size={24} color={color} />,
         }}
       />
-      
-
     </Tabs>
   );
 }
