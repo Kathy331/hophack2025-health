@@ -1,5 +1,7 @@
 // geminiService.ts
-const backendUrl = "https://ad1548fa158e.ngrok-free.app";
+import Constants from 'expo-constants';
+
+const backendUrl = Constants.expoConfig?.extra?.NGROK_FORWARDING || process.env.NGROK_FORWARDING || "http://localhost:3000";
 
 export const sendReceiptToBackend = async (imageUri: string) => {
   try {

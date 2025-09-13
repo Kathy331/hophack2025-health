@@ -43,6 +43,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "NGROK_FORWARDING": "https://ad1548fa158e.ngrok-free.app"
     }
   }
 }
