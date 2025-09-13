@@ -17,12 +17,14 @@ import { supabase } from '../../../supabaseClient';
 const backendUrl = "https://f7406815deb6.ngrok-free.app";
 
 interface Recipe {
+  id?: number;  // recipe_id from database
   title: string;
   ingredients: string[];
   steps: string[];
   cookTime: string;
   servings: number;
   difficulty: string;
+  url?: string;  // URL of the video source
 }
 
 interface ApiResponse {
