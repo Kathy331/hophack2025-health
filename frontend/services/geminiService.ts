@@ -1,7 +1,6 @@
 const backendUrl = "https://59c7bf52fa8c.ngrok-free.app";
 
-
-export const sendReceiptToBackend = async (imageUri: string) => {
+export const sendReceiptToBackend = async (imageUri: string, userId: string) => {
   try {
     const formData = new FormData();
     formData.append("file", {
@@ -10,13 +9,17 @@ export const sendReceiptToBackend = async (imageUri: string) => {
       name: "receipt.jpg",
     } as any);
 
-    const response = await fetch(`${backendUrl}/gem/parse-receipt`, {  // <-- add /gem
+    // Pass the logged-in user's UUID
+    formData.append("user_uuid", userId);
+
+    const response = await fetch(`${backendUrl}/gem/parse-receipt`, {
       method: "POST",
       body: formData,
     });
 
     if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
+      const text = await response.text();
+      throw new Error(`Server error ${response.status}: ${text}`);
     }
 
     const data = await response.json();
@@ -26,6 +29,9 @@ export const sendReceiptToBackend = async (imageUri: string) => {
     throw error;
   }
 };
+
+// analyzeImageWithGemini remains unchanged
+
 
 export const analyzeImageWithGemini = async (imageUri: string) => {
   try {
