@@ -25,12 +25,14 @@ interface ApiResponse {
   success: boolean;
   recipe?: Recipe;
   error?: string;
+  transcript?: string;
 }
 
 export default function RecipesScreen() {
   const [videoUrl, setVideoUrl] = useState('');
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Validate and normalize video URL
@@ -71,6 +73,7 @@ export default function RecipesScreen() {
   setLoading(true);
   setRecipe(null);
   setStatusMessage(null);
+  setTranscript(null);
 
     try {
       // Call your Python FastAPI backend
@@ -88,11 +91,17 @@ export default function RecipesScreen() {
       const data: ApiResponse = await response.json();
 
       if (data.success && data.recipe) {
-        setRecipe(data.recipe);
+        // Handle both {recipe: {...}} and {...} shapes
+        const recipeObj = (data.recipe && typeof data.recipe === 'object' && 'recipe' in data.recipe && typeof (data.recipe as any).recipe === 'object')
+          ? (data.recipe as any).recipe
+          : data.recipe;
+        setRecipe(recipeObj);
         setStatusMessage('Transcript found and recipe generated!');
-        console.log('Transcript found, recipe:', data.recipe);
+        setTranscript(data.transcript || null);
+        console.log('Transcript found, recipe:', recipeObj);
       } else {
         setStatusMessage(data.error ? `Transcript not found or error: ${data.error}` : 'Failed to generate recipe.');
+        setTranscript(data.transcript || null);
         console.log('Transcript error or no recipe:', data.error || data);
         setRecipe({
           title: '',
@@ -202,10 +211,18 @@ export default function RecipesScreen() {
         )}
       </View>
 
+
       {statusMessage && (
         <Text style={{ color: statusMessage.includes('error') || statusMessage.includes('not found') ? 'red' : 'green', textAlign: 'center', marginVertical: 10 }}>
           {statusMessage}
         </Text>
+      )}
+
+      {transcript && (
+        <View style={{ backgroundColor: '#f0f0f0', margin: 10, padding: 10, borderRadius: 8 }}>
+          <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Transcript:</Text>
+          <Text style={{ fontSize: 13, color: '#333' }}>{transcript}</Text>
+        </View>
       )}
 
       {recipe && (

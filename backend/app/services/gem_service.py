@@ -29,8 +29,9 @@ def generate_recipe(video_url: str, platform: str) -> dict:
         if not video_id:
             return {"success": False, "error": "Invalid YouTube URL or unable to extract video ID."}
         try:
-            transcript = YouTubeTranscriptApi.get_transcript(video_id)
-            transcript_text = " ".join([t["text"] for t in transcript])
+            ytt_api = YouTubeTranscriptApi()
+            fetched_transcript = ytt_api.fetch(video_id)
+            transcript_text = " ".join([snippet.text for snippet in fetched_transcript])
         except (TranscriptsDisabled, NoTranscriptFound, VideoUnavailable) as e:
             error = f"Could not fetch transcript: {str(e)}"
         except Exception as e:
@@ -39,7 +40,7 @@ def generate_recipe(video_url: str, platform: str) -> dict:
         error = "Only YouTube video links are supported for now."
 
     if not transcript_text:
-        return {"success": False, "error": error or "No transcript available."}
+        return {"success": False, "error": error or "No transcript available.", "transcript": None}
 
     # Send transcript to Gemini
     model = genai.GenerativeModel("gemini-2.5-flash")
@@ -54,8 +55,8 @@ def generate_recipe(video_url: str, platform: str) -> dict:
     print('Gemini raw response:', response.text)
     recipe = safe_parse_gemini_response(response.text)
     if not recipe:
-        return {"success": False, "error": "Gemini did not return a valid recipe."}
-    return {"success": True, "recipe": recipe}
+        return {"success": False, "error": "Gemini did not return a valid recipe.", "transcript": transcript_text}
+    return {"success": True, "recipe": recipe, "transcript": transcript_text}
 import os
 import io
 import json
