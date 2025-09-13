@@ -16,7 +16,7 @@ def parse_receipt(image_bytes: bytes) -> dict:
     # Convert bytes to a PIL Image
     image = Image.open(io.BytesIO(image_bytes))
 
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     prompt = (
         "Extract food items and their estimated shelf life in days. "
@@ -43,7 +43,7 @@ def analyze_image(image_bytes: bytes) -> dict:
     # Convert bytes to a PIL Image
     image = Image.open(io.BytesIO(image_bytes))
 
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     prompt = (
         "Extract food items from the image and their estimated shelf life in days based on how the food looks. "
