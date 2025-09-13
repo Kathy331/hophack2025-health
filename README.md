@@ -1,4 +1,4 @@
-# hoptest
+# hophack2025-health
 
 ## Get started
 
@@ -35,13 +35,44 @@
     ```bash
     curl http://localhost:3000/api/health
     ```
-  ### first start the backend server
+7. ngrok is used to expose the backend server to the internet so that the expo app can access it
+### install ngrok globally
+    ```bash
+    npm install -g ngrok
+    ```
+### configure the authtoken for ngrok (you can get it from your ngrok dashboard) 
+
+  #### Go to https://dashboard.ngrok.com/signup and create a free account (or log in if you already have one).
+
+  #### After logging in, go to https://dashboard.ngrok.com/get-started/your-authtoken and copy your authtoken. -->
+    ```bash
+    ngrok config add-authtoken <your-authtoken>
+    ```
+
+### start ngrok in a new terminal window
+
+    ```bash
+    ngrok http 3000
+    ```
+### copy the https url and replace it in geminiService.ts file in the frontend folder
+    ```typescript
+    this.baseUrl = 'https://xxxxxx.ngrok-free.app'; // replace with your ngrok URL
+    ```
+
+8. start the expo app with tunnel option
+    ### first start the backend server
     ```bash
      cd backend
     npm run start
     ```
+    ### then start the expo app with tunnel option
+    ```bash
+    npx expo start --tunnel
+    ```
 
-## Setup & Usage Guide for Connecting Backend and Frontend (Curtis Changes)
+
+
+<!-- ## Setup & Usage Guide for Connecting Backend and Frontend (Curtis Changes)
 
 ### 1. Prerequisites
 - Node.js (v20+ recommended)
@@ -101,4 +132,4 @@
 ### 7. Notes
 - The backend uses Express, Multer for image upload, and Google Gemini for AI analysis.
 - The frontend uses Expo, React Native, and fetches results from the backend.
-- You may need to update the model name in `server.js` if Google changes available models.
+- You may need to update the model name in `server.js` if Google changes available models. -->
