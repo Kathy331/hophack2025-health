@@ -14,7 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
 import { supabase } from '../../../supabaseClient';
 
-const backendUrl = "https://e002e90220c8.ngrok-free.app";
+const backendUrl = "https://1b2faa1abd69.ngrok-free.app";
 
 interface Recipe {
   title: string;
@@ -302,16 +302,32 @@ export default function AddRecipeScreen() {
       {!showManualInput && (
         <View style={styles.inputSection}>
           <Text style={styles.label}>Paste Video URL</Text>
-          <TextInput
-            style={styles.input}
-            value={videoUrl}
-            onChangeText={setVideoUrl}
-            placeholder="https://youtube.com/watch?v=..."
-            placeholderTextColor="#6b8f71"
-            multiline
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, { flex: 1, marginBottom: 0 }]}
+              value={videoUrl}
+              onChangeText={setVideoUrl}
+              placeholder="https://youtube.com/watch?v=..."
+              placeholderTextColor="#6b8f71"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {videoUrl ? (
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={() => {
+                  setVideoUrl('');
+                  setRecipe(null);
+                  setStatusMessage(null);
+                  setTranscript(null);
+                  setIsBookmarked(false);
+                }}
+              >
+                <MaterialIcons name="close" size={24} color="#52b788" />
+              </TouchableOpacity>
+            ) : null}
+          </View>
 
           <View style={styles.buttonRow}>
             <TouchableOpacity
@@ -395,6 +411,16 @@ export default function AddRecipeScreen() {
 }
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 12,
+    padding: 4,
+  },
   container: { flex: 1, backgroundColor: '#e9f5ec' }, // soft green background
   header: { padding: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#1b4332' },

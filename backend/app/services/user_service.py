@@ -28,17 +28,31 @@ async def create_profile_in_db(user_id: str, username: str, avatar: Optional[str
 async def save_recipe_in_db(user_id: str, recipe: dict):
     try:
         # 1. Insert into recipes table
-        cook_time = recipe.get("cookTime", "0")
-        # Try to extract minutes as int, fallback to 0
-        try:
-            cook_time_minutes = int(''.join(filter(str.isdigit, cook_time)))
-        except Exception:
-            cook_time_minutes = 0
+        cook_time = recipe.get("cookTime", "0 minutes")
+        # Handle time ranges by taking the average and using ~ for estimate
+        if '-' in cook_time:
+            times = cook_time.split('-')
+            numbers = []
+            for t in times:
+                try:
+                    num = int(''.join(filter(str.isdigit, t.strip())))
+                    numbers.append(num)
+                except:
+                    pass
+            if numbers:
+                # Take average and mark as estimate with ~
+                cook_time = f"~{sum(numbers) // len(numbers)} minutes"
+        elif not any(unit in cook_time.lower() for unit in ['minute', 'hour']):
+            try:
+                minutes = int(''.join(filter(str.isdigit, cook_time)))
+                cook_time = f"{minutes} minutes"
+            except:
+                cook_time = "0 minutes"
 
         recipe_insert = {
             "user_uuid": user_id,
             "title": recipe.get("title", "Untitled"),
-            "cook_time": f"{cook_time_minutes} minutes",  # Convert to INTERVAL format
+            "cook_time": cook_time,  # Now with ~ for estimates
             "difficulty": recipe.get("difficulty", "Easy"),
             "servings": recipe.get("servings", 1),
             "url": recipe.get("url", None)  # Save the video/source URL
