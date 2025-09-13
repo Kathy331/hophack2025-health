@@ -1,14 +1,14 @@
-tables created in supabase via SQL editor
-
 -- Main recipe table
 CREATE TABLE IF NOT EXISTS recipes (
     id SERIAL PRIMARY KEY,
     user_uuid UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE, -- recipe owner
     title TEXT NOT NULL,
-    cook_time_minutes INT NOT NULL,
+    cook_time INTERVAL NOT NULL,  -- better than INT for times
     difficulty TEXT CHECK (difficulty IN ('Easy', 'Medium', 'Hard')),
     servings INT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
+    url TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (user_uuid, url)  -- prevent duplicates per user
 );
 
 -- Ingredients linked to recipe

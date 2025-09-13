@@ -1,4 +1,4 @@
-const backendUrl = "https://4c113d0b753c.ngrok-free.app"; // replace with your backend
+const backendUrl = "https://e002e90220c8.ngrok-free.app"; // replace with your backend
 
 export interface Recipe {
   title: string;
@@ -7,6 +7,7 @@ export interface Recipe {
   cookTime: string;
   servings: number;
   difficulty: string;
+  url?: string;  // URL of the video source
 }
 
 export const createProfile = async (id: string, username: string, avatar?: string) => {
@@ -34,10 +35,16 @@ export const createProfile = async (id: string, username: string, avatar?: strin
 };
 
 export const saveRecipeToSupabase = async (recipe: Recipe, userId: string) => {
+  // Ensure recipe has all required fields before saving
+  const recipeToSave = {
+    ...recipe,
+    url: recipe.url || null, // Ensure URL is included
+  };
+  
   const response = await fetch(`${backendUrl}/user/save_recipe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ recipe, userId }),
+    body: JSON.stringify({ recipe: recipeToSave, userId }),
   });
   if (!response.ok) throw new Error("Failed to save recipe");
   return response.json();

@@ -38,9 +38,10 @@ async def save_recipe_in_db(user_id: str, recipe: dict):
         recipe_insert = {
             "user_uuid": user_id,
             "title": recipe.get("title", "Untitled"),
-            "cook_time_minutes": cook_time_minutes,
+            "cook_time": f"{cook_time_minutes} minutes",  # Convert to INTERVAL format
             "difficulty": recipe.get("difficulty", "Easy"),
-            "servings": recipe.get("servings", 1)
+            "servings": recipe.get("servings", 1),
+            "url": recipe.get("url", None)  # Save the video/source URL
         }
         recipe_resp = supabase.table("recipes").insert(recipe_insert).execute()
         if recipe_resp.error:
