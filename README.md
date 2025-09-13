@@ -39,13 +39,26 @@
     cd backend
     ngrok http 3000
     ```
-5. setting up backend ennvironment: command + p to open a python interpreter and make an environment
+5. Setting up Python environment in VS Code:
     ```bash
     cd backend
+    # Create and activate virtual environment
     python3 -m venv venv
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     pip install -r requirements.txt
     ```
+
+    ### Select the Virtual Environment in VS Code:
+    1. Open Command Palette (Cmd/Ctrl + Shift + P)
+    2. Type "Python: Select Interpreter"
+    3. Choose the interpreter from ./venv/bin/python
+    4. VS Code will automatically update settings.json
+    
+    ### To verify the interpreter:
+    - Look at the bottom-left corner of VS Code
+    - Should show "Python ('venv': venv)"
+    - Or run this in terminal: `which python`
+
     use `deactivate` command to exit the virtual environment
 6. !!!adding const backendUrl =
     -add your ngrok url in the frontend/app/(tabs)/(recipes)/index.tsx file
