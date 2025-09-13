@@ -79,16 +79,22 @@ export default function AddRecipeScreen() {
     }
     try {
       if (!isBookmarked) {
-        await saveRecipeToSupabase(recipe, user.id);
-        setIsBookmarked(true);
-        setStatusMessage("Recipe saved!");
+        const result = await saveRecipeToSupabase(recipe, user.id);
+        if (result.success) {
+          setIsBookmarked(true);
+          setStatusMessage("Recipe saved!");
+        }
       } else {
-        await deleteRecipeFromSupabase(recipe, user.id);
-        setIsBookmarked(false);
-        setStatusMessage("Recipe removed from saved!");
+        const result = await deleteRecipeFromSupabase(recipe, user.id);
+        if (result.success) {
+          setIsBookmarked(false);
+          setStatusMessage("Recipe removed from saved!");
+        }
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to update bookmark.");
+      if (!error.message?.includes('success')) {  // Only show error if it's not a success message
+        Alert.alert("Error", error.message || "Failed to update bookmark.");
+      }
     }
   };
 
