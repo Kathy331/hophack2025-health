@@ -52,7 +52,6 @@ def generate_recipe(video_url: str, platform: str) -> dict:
         f"Transcript: {transcript_text}"
     )
     response = model.generate_content(prompt)
-    print('Gemini raw response:', response.text)
     recipe = safe_parse_gemini_response(response.text)
     if not recipe:
         return {"success": False, "error": "Gemini did not return a valid recipe.", "transcript": transcript_text}

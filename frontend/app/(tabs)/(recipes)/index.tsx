@@ -252,12 +252,16 @@ export default function RecipesScreen() {
           <View style={styles.stepsSection}>
             <Text style={styles.sectionTitle}>Instructions</Text>
             {Array.isArray(recipe.steps) && recipe.steps.length > 0 ? (
-              recipe.steps.map((step, index) => (
-                <View key={index} style={styles.step}>
-                  <Text style={styles.stepNumber}>{index + 1}</Text>
-                  <Text style={styles.stepText}>{step}</Text>
-                </View>
-              ))
+              recipe.steps.map((step, index) => {
+                // Remove markdown bold/italic asterisks for mobile display
+                const cleanStep = step.replace(/\*\*/g, '').replace(/\*/g, '');
+                return (
+                  <View key={index} style={styles.step}>
+                    <Text style={styles.stepNumber}>{index + 1}</Text>
+                    <Text style={styles.stepText}>{cleanStep}</Text>
+                  </View>
+                );
+              })
             ) : (
               <Text style={styles.ingredient}>No instructions found.</Text>
             )}
