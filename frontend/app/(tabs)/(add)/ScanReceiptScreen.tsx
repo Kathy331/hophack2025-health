@@ -19,10 +19,7 @@ export default function ScanReceiptScreen() {
   const requestCameraPermission = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(
-        'Camera Permission Required',
-        'We need camera access to scan receipts.'
-      );
+      Alert.alert('Camera Permission Required', 'We need camera access to scan receipts.');
       return false;
     }
     return true;
@@ -31,10 +28,7 @@ export default function ScanReceiptScreen() {
   const requestLibraryPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(
-        'Photo Library Permission Required',
-        'We need photo library access to select receipt images.'
-      );
+      Alert.alert('Photo Library Permission Required', 'We need photo library access to select receipt images.');
       return false;
     }
     return true;
@@ -47,15 +41,15 @@ export default function ScanReceiptScreen() {
     try {
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
-        aspect: [3, 4], // Better aspect ratio for receipts
-        quality: 1, // Higher quality for OCR
+        aspect: [3, 4],
+        quality: 1,
       });
 
       if (!result.canceled && result.assets?.[0]) {
         setScannedReceipts(prev => [...prev, result.assets[0].uri]);
         Alert.alert('Receipt Scanned!', 'Receipt has been captured successfully.');
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to scan receipt');
     }
   };
@@ -77,36 +71,28 @@ export default function ScanReceiptScreen() {
         setScannedReceipts(prev => [...prev, result.assets[0].uri]);
         Alert.alert('Receipt Added!', 'Receipt image has been added successfully.');
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to select receipt');
     }
   };
 
   const showReceiptOptions = () => {
-    Alert.alert(
-      'Add Receipt',
-      'How would you like to add your receipt?',
-      [
-        { text: 'Scan with Camera', onPress: scanReceiptWithCamera },
-        { text: 'Select from Photos', onPress: selectReceiptFromLibrary },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    Alert.alert('Add Receipt', 'How would you like to add your receipt?', [
+      { text: '📸 Scan with Camera', onPress: scanReceiptWithCamera },
+      { text: '🖼️ Select from Photos', onPress: selectReceiptFromLibrary },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   const removeReceipt = (index: number) => {
-    Alert.alert(
-      'Remove Receipt',
-      'Are you sure you want to remove this receipt?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Remove', 
-          style: 'destructive',
-          onPress: () => setScannedReceipts(prev => prev.filter((_, i) => i !== index))
-        },
-      ]
-    );
+    Alert.alert('Remove Receipt', 'Are you sure you want to remove this receipt?', [
+      { text: 'Cancel', style: 'cancel' },
+      { 
+        text: 'Remove', 
+        style: 'destructive',
+        onPress: () => setScannedReceipts(prev => prev.filter((_, i) => i !== index))
+      },
+    ]);
   };
 
   const processReceipts = async () => {
@@ -119,7 +105,6 @@ export default function ScanReceiptScreen() {
       Alert.alert('Processing Receipts', `Processing ${scannedReceipts.length} receipt(s)...`);
 
       const allParsedResults = [];
-
       for (const uri of scannedReceipts) {
         const parsed = await sendReceiptToBackend(uri);
         allParsedResults.push(parsed);
@@ -127,35 +112,28 @@ export default function ScanReceiptScreen() {
 
       console.log("Parsed Receipts:", allParsedResults);
       Alert.alert('Success', 'Receipts processed successfully! Check console for JSON.');
-
-      // Optionally: clear receipts after processing
-      // setScannedReceipts([]);
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to process receipts. See console for details.');
     }
   };
 
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.title}>Scan Receipts</Text>
-      <Text style={styles.subtitle}>Capture or select receipt images to extract data</Text>
-      
+      <Text style={styles.title}>🧾 Scan Receipts</Text>
+      <Text style={styles.subtitle}>Capture or select receipts to extract data</Text>
+
       <TouchableOpacity style={styles.scanButton} onPress={showReceiptOptions}>
-        <Text style={styles.scanButtonText}>📄 Add Receipt</Text>
+        <Text style={styles.scanButtonText}>+ Add Receipt</Text>
       </TouchableOpacity>
 
       {scannedReceipts.length > 0 && (
         <View style={styles.receiptsContainer}>
-          <Text style={styles.sectionTitle}>Scanned Receipts ({scannedReceipts.length})</Text>
+          <Text style={styles.sectionTitle}>Scanned ({scannedReceipts.length})</Text>
           <View style={styles.receiptsGrid}>
             {scannedReceipts.map((uri, index) => (
               <View key={index} style={styles.receiptWrapper}>
                 <Image source={{ uri }} style={styles.receiptImage} />
-                <TouchableOpacity 
-                  style={styles.removeButton}
-                  onPress={() => removeReceipt(index)}
-                >
+                <TouchableOpacity style={styles.removeButton} onPress={() => removeReceipt(index)}>
                   <Text style={styles.removeButtonText}>×</Text>
                 </TouchableOpacity>
                 <View style={styles.receiptOverlay}>
@@ -176,7 +154,7 @@ export default function ScanReceiptScreen() {
       )}
 
       <View style={styles.tipContainer}>
-        <Text style={styles.tipTitle}>💡 Tips for better scanning:</Text>
+        <Text style={styles.tipTitle}>💡 Tips for Better Scanning</Text>
         <Text style={styles.tipText}>• Ensure good lighting</Text>
         <Text style={styles.tipText}>• Keep receipt flat and straight</Text>
         <Text style={styles.tipText}>• Include all text in the frame</Text>
@@ -189,45 +167,58 @@ export default function ScanReceiptScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#eaf8ea', // soft green background
   },
   contentContainer: {
     padding: 20,
     alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1a531b',
+    marginBottom: 5,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#4d784e',
     textAlign: 'center',
     marginBottom: 20,
   },
   scanButton: {
-    backgroundColor: '#FF9500',
-    paddingHorizontal: 30,
+    backgroundColor: '#34c759',
+    paddingHorizontal: 35,
     paddingVertical: 15,
-    borderRadius: 25,
-    marginBottom: 30,
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 25,
   },
   scanButtonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   receiptsContainer: {
     width: '100%',
-    marginBottom: 30,
+    marginTop: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: 15,
-    color: '#333',
+    color: '#1a531b',
   },
   receiptsGrid: {
     flexDirection: 'row',
@@ -236,20 +227,19 @@ const styles = StyleSheet.create({
   },
   receiptWrapper: {
     position: 'relative',
-    marginBottom: 10,
-    borderRadius: 10,
-    overflow: 'hidden',
+    marginBottom: 12,
   },
   receiptImage: {
-    width: (width - 60) / 2,
-    height: (width - 60) / 2 * 1.3, // Taller aspect ratio for receipts
-    backgroundColor: '#ddd',
+    width: (width - 80) / 2,
+    height: (width - 80) / 2 * 1.3,
+    borderRadius: 14,
+    backgroundColor: '#c8e6c9',
   },
   removeButton: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+    top: 5,
+    right: 5,
+    backgroundColor: '#00000080',
     width: 28,
     height: 28,
     borderRadius: 14,
@@ -257,53 +247,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   removeButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
   },
   receiptOverlay: {
     position: 'absolute',
     bottom: 8,
     left: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: '#00000070',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 10,
   },
   receiptNumber: {
-    color: 'white',
+    color: '#fff',
     fontSize: 12,
     fontWeight: '600',
   },
   processButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#1db954',
     paddingHorizontal: 40,
     paddingVertical: 15,
-    borderRadius: 25,
-    marginBottom: 30,
+    borderRadius: 30,
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 3,
   },
   processButtonText: {
-    color: 'white',
+    color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   tipContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 16,
     width: '100%',
+    marginTop: 25,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#d9e7d9',
   },
   tipTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
+    fontWeight: '700',
+    marginBottom: 8,
+    color: '#1a531b',
   },
   tipText: {
     fontSize: 14,
-    color: '#666',
+    color: '#4d784e',
     marginBottom: 4,
   },
 });

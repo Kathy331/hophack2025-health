@@ -1,15 +1,27 @@
 import React from 'react';
-import { View, Text, TextInput, Switch, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Switch,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+
 export default function ProfileSettingsUI() {
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title}>Profile Settings</Text>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={styles.title}>🌱 Profile Settings</Text>
 
       <Text style={styles.label}>Username</Text>
       <TextInput
         style={styles.input}
         placeholder="Your username"
-        editable={false}  // Non-editable for purely visual purpose
+        editable={false}
         value="john_doe"
       />
 
@@ -32,12 +44,12 @@ export default function ProfileSettingsUI() {
 
       <View style={styles.switchContainer}>
         <Text style={styles.switchLabel}>Enable Notifications</Text>
-        <Switch value={true} disabled={true} />
+        <Switch value={true} disabled={true} trackColor={{ true: '#83BD75' }} />
       </View>
 
       <View style={styles.switchContainer}>
         <Text style={styles.switchLabel}>Private Account</Text>
-        <Switch value={false} disabled={true} />
+        <Switch value={false} disabled={true} trackColor={{ false: '#ccc' }} />
       </View>
 
       <TouchableOpacity style={styles.saveButton} disabled={true}>
@@ -45,55 +57,72 @@ export default function ProfileSettingsUI() {
       </TouchableOpacity>
     </ScrollView>
   );
-  }
+}
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingTop: 40,
-    backgroundColor: '#f4f6f8',
+    backgroundColor: '#EAF8E6', // soft eco-friendly green
     flexGrow: 1,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#333',
+    fontWeight: 'bold',
+    color: '#2C6E49',
     marginBottom: 30,
+    textAlign: 'center',
   },
   label: {
     fontWeight: '600',
-    color: '#555',
-    marginBottom: 8,
+    color: '#2C6E49',
+    marginBottom: 6,
+    fontSize: 16,
   },
   input: {
     backgroundColor: '#fff',
     paddingVertical: 12,
     paddingHorizontal: 15,
-    borderRadius: 6,
-    borderColor: '#ddd',
+    borderRadius: 12,
+    borderColor: '#C5E1A5',
     borderWidth: 1.5,
     fontSize: 16,
-    marginBottom: 20,
-    color: '#999', // grayed out to indicate read-only
+    marginBottom: 18,
+    color: '#888',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    elevation: 2,
   },
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
+    borderColor: '#C5E1A5',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
+    elevation: 1,
   },
   switchLabel: {
     fontWeight: '600',
     fontSize: 16,
-    color: '#444',
+    color: '#2C6E49',
   },
   saveButton: {
-    backgroundColor: '#4a90e2',
-    paddingVertical: 14,
-    borderRadius: 8,
+    backgroundColor: '#83BD75',
+    paddingVertical: 16,
+    borderRadius: 20,
     alignItems: 'center',
-    marginTop: 10,
-    opacity: 0.5, // faded since it's disabled
+    marginTop: 20,
+    opacity: 0.5, // visually disabled
   },
   saveButtonText: {
     color: '#fff',
