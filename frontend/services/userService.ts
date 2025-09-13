@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-const backendUrl = "https://906c0439cec7.ngrok-free.app"; // replace with your backend
-=======
 const backendUrl = "https://cb8c567821c0.ngrok-free.app"; // replace with your backend
 
 export interface Recipe {
@@ -13,7 +10,6 @@ export interface Recipe {
   difficulty: string;
   url?: string;  // URL of the video source
 }
->>>>>>> d7be45853e050c392993c073fe9e82eca796e7b6
 
 export const createProfile = async (id: string, username: string, avatar?: string) => {
   try {
