@@ -8,12 +8,10 @@
    npm install
    ```
 
-2. ngrok is used to expose the backend server to the internet so that the expo app can access it
+2. ngrok is used to expose the backend server to the internet so that the expo app can access it. set up ngrok account from https://dashboard.ngrok.com/signup and after logging in, go to https://dashboard.ngrok.com/get-started/your-authtoken and copy your authtoken.
     ```bash
     npm install -g ngrok
     ```
-  set up ngrok account from https://dashboard.ngrok.com/signup and after logging in, go to https://dashboard.ngrok.com/get-started/your-authtoken and copy your authtoken.
-
     ```bash
     ngrok config add-authtoken <your-authtoken>
     ```
