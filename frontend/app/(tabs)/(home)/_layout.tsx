@@ -23,7 +23,6 @@ type Section = {
   data: Item[];
 };
 
-// ✅ Split your sections into two groups
 const remindersSections: Section[] = [
   {
     title: 'Reminders',
@@ -32,8 +31,8 @@ const remindersSections: Section[] = [
         key: 'banana',
         label: 'Banana',
         expDate: '2024-10-05',
-        containerStyle: { backgroundColor: '#f4d35e' },
-        textStyle: { color: '#000' },
+        containerStyle: { backgroundColor: '#B4E197' },
+        textStyle: { color: '#2C6E49' },
       },
     ],
   },
@@ -43,8 +42,8 @@ const remindersSections: Section[] = [
         key: 'apple',
         label: 'Apple',
         expDate: '2024-10-05',
-        containerStyle: { backgroundColor: '#f4d35e' },
-        textStyle: { color: '#000' },
+        containerStyle: { backgroundColor: '#A0D995' },
+        textStyle: { color: '#2C6E49' },
       },
     ],
   },
@@ -54,8 +53,8 @@ const remindersSections: Section[] = [
         key: 'orange',
         label: 'Orange',
         expDate: '2024-10-05',
-        containerStyle: { backgroundColor: '#f4d35e' },
-        textStyle: { color: '#000' },
+        containerStyle: { backgroundColor: '#83BD75' },
+        textStyle: { color: '#fff' },
       },
     ],
   },
@@ -67,9 +66,9 @@ const otherSections: Section[] = [
     data: [
       {
         key: 'apple-fw',
-        label: 'You saved 5 apples from food waste this week!',
-        containerStyle: { backgroundColor: '#fff' },
-        textStyle: { color: '#000' },
+        label: 'You saved 5 apples from food waste this week! 🍏',
+        containerStyle: { backgroundColor: '#EAF8E6' },
+        textStyle: { color: '#2C6E49' },
       },
     ],
   },
@@ -78,16 +77,16 @@ const otherSections: Section[] = [
     data: [
       {
         key: 'apple-cost',
-        label: 'You saved $10.00 on apples this week!',
-        containerStyle: { backgroundColor: '#fff' },
-        textStyle: { color: '#000' },
+        label: 'You saved $10.00 on apples this week! 💰',
+        containerStyle: { backgroundColor: '#EAF8E6' },
+        textStyle: { color: '#2C6E49' },
       },
     ],
   },
 ];
 
 export default function CommunityLayout() {
-   const renderItem = ({ item, section }: { item: Item; section: Section }) => {
+  const renderItem = ({ item, section }: { item: Item; section: Section }) => {
     const isReminderOrUntitled = section.title === 'Reminders' || !section.title;
 
     return (
@@ -128,9 +127,9 @@ export default function CommunityLayout() {
 
   const renderSectionHeader = ({ section: { title } }: { section: Section }) =>
     title ? <Text style={styles.header}>{title}</Text> : null;
-return (
-   <SafeAreaView style={styles.container}>
-      {/* ✅ First SectionList for Reminders */}
+
+  return (
+    <SafeAreaView style={styles.container}>
       <SectionList
         sections={remindersSections}
         keyExtractor={(item) => item.key}
@@ -141,10 +140,8 @@ return (
         style={styles.list}
       />
 
-      {/* ✅ Spacer between the two lists */}
       <View style={styles.spacer} />
 
-      {/* ✅ Second SectionList for Food Waste and Costs */}
       <SectionList
         sections={otherSections}
         keyExtractor={(item) => item.key}
@@ -155,47 +152,53 @@ return (
         style={styles.list}
       />
 
-      <ExpoStatusBar style="auto" />
+      <ExpoStatusBar style="dark" />
     </SafeAreaView>
   );
-  }
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#edebebff',
+    backgroundColor: '#EAF8E6', // Soft eco-friendly green
+    paddingHorizontal: 10,
   },
   item: {
-    height: 150,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginHorizontal: 10,
-    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginVertical: 6,
+    borderRadius: 16,
     justifyContent: 'center',
-    backgroundColor: '#3c7746ff',
+
+    // Soft shadow for "floating" card look
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 4,
   },
   title: {
-    fontSize: 20,
-    color: '#eaeaeaff',
+    fontSize: 18,
+    fontWeight: '600',
   },
   header: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    color: '#2C6E49',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   sectionSeparator: {
-    height: 5,
+    height: 8,
   },
   list: {
-    flexGrow: 0, // so each list sizes to its content
+    flexGrow: 0,
   },
   listContent: {
-    paddingBottom: 10,
+    paddingBottom: 12,
   },
   spacer: {
-    height: 40, // 👈 adjust this space between the two lists
+    height: 30,
   },
   rowBetween: {
     flexDirection: 'row',
@@ -204,6 +207,7 @@ const styles = StyleSheet.create({
   },
   expDate: {
     fontSize: 14,
-    color: '#473507ff',
+    fontWeight: '500',
+    opacity: 0.8,
   },
 });

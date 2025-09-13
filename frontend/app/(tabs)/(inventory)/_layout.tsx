@@ -10,23 +10,21 @@ import {
   Platform,
 } from 'react-native';
 
-// Sample data (make sure to replace with your real image URLs)
+// Sample data — updated colors to fit green, eco-friendly theme
 const images = [
-  { id: '1', uri: 'https://placekitten.com/200/200', name: 'Kitten 1', color: '#f4d35e' },
-  { id: '2', uri: 'https://placekitten.com/201/201', name: 'Kitten 2', color: '#f28a8a' },
-  { id: '3', uri: 'https://placekitten.com/202/202', name: 'Kitten 3', color: '#8ac6d1' },
-  { id: '4', uri: 'https://placekitten.com/203/203', name: 'Kitten 4', color: '#a3d39c' },
-  { id: '5', uri: 'https://placekitten.com/204/204', name: 'Kitten 5', color: '#f4d35e' },
-  { id: '6', uri: 'https://placekitten.com/205/205', name: 'Kitten 6', color: '#f28a8a' },
+  { id: '1', uri: 'https://placekitten.com/200/200', name: 'Kitten 1', color: '#B4E197' },
+  { id: '2', uri: 'https://placekitten.com/201/201', name: 'Kitten 2', color: '#A0D995' },
+  { id: '3', uri: 'https://placekitten.com/202/202', name: 'Kitten 3', color: '#83BD75' },
+  { id: '4', uri: 'https://placekitten.com/203/203', name: 'Kitten 4', color: '#4E944F' },
+  { id: '5', uri: 'https://placekitten.com/204/204', name: 'Kitten 5', color: '#B4E197' },
+  { id: '6', uri: 'https://placekitten.com/205/205', name: 'Kitten 6', color: '#A0D995' },
 ];
 
-// Number of columns and card sizing
 const numColumns = 3;
 const cardMargin = 16;
 const screenWidth = Dimensions.get('window').width;
 const imageSize = (screenWidth - cardMargin * (numColumns + 1)) / numColumns;
 
-// Reusable FruitCard component (now with image and label)
 function FruitCard({
   name,
   color,
@@ -47,8 +45,8 @@ function FruitCard({
 export default function Index() {
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      <Text style={styles.header}>Food Inventory</Text>
+      <StatusBar barStyle="dark-content" backgroundColor="#EAF8E6" />
+      <Text style={styles.header}>🌱 Food Inventory</Text>
       <FlatList
         data={images}
         keyExtractor={(item) => item.id}
@@ -61,21 +59,23 @@ export default function Index() {
       />
     </View>
   );
-  }
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#EAF8E6', // soft green background
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 40 : 40,
   },
   header: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#000',
-    paddingTop: 20,
+    color: '#2C6E49',
+    paddingTop: 10,
     paddingHorizontal: 16,
     paddingBottom: 12,
+    textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'sans-serif-medium',
   },
   listContent: {
     paddingBottom: 20,
@@ -87,18 +87,16 @@ const styles = StyleSheet.create({
   card: {
     width: imageSize,
     margin: cardMargin / 2,
-    borderRadius: 12,
+    borderRadius: 18,
     overflow: 'hidden',
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#D0F0C0',
 
-    // Shadow for iOS
+    // Soft shadow for Duolingo-like floating feel
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
-
-    // Elevation for Android
-    elevation: 4,
+    elevation: 6,
   },
   image: {
     width: '100%',
@@ -108,8 +106,8 @@ const styles = StyleSheet.create({
   cardText: {
     textAlign: 'center',
     fontSize: 16,
-    color: '#000',
-    fontWeight: 'bold',
-    padding: 8,
+    color: '#2C6E49',
+    fontWeight: '600',
+    paddingVertical: 8,
   },
 });
