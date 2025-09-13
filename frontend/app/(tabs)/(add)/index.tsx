@@ -72,46 +72,58 @@ export default function AddScreen() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f1f7f3', // soft eco-friendly green background
   },
   toggleContainer: {
     flexDirection: 'row',
-    margin: 20,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 25,
-    padding: 3,
+    marginHorizontal: 20,
+    marginTop: 15,
+    backgroundColor: '#dce6df', // muted light green-gray
+    borderRadius: 30,
+    padding: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
   },
   toggleButton: {
     flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 26,
   },
   toggleButtonLeft: {
-    borderTopLeftRadius: 22,
-    borderBottomLeftRadius: 22,
+    borderTopLeftRadius: 26,
+    borderBottomLeftRadius: 26,
   },
   toggleButtonRight: {
-    borderTopRightRadius: 22,
-    borderBottomRightRadius: 22,
+    borderTopRightRadius: 26,
+    borderBottomRightRadius: 26,
   },
   toggleButtonActive: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4CAF50', // natural green
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
   },
   toggleText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666',
+    color: '#4d6651', // earthy gray-green for inactive tab text
   },
   toggleTextActive: {
-    color: 'white',
+    color: '#fff',
+    fontWeight: '700',
   },
   content: {
     flex: 1,
+    marginTop: 10,
   },
 });
