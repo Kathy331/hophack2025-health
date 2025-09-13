@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from gem_service import parse_receipt, analyze_image  # <-- import analyze_image
+from .gem_service import parse_receipt, analyze_image  # <-- import analyze_image
 
 # Load env vars (Gemini API key, etc.)
 load_dotenv()
