@@ -17,6 +17,7 @@ import { supabase } from '../../../supabaseClient';
 
 const backendUrl = "https://c334963bcfc2.ngrok-free.app";
 
+
 interface Recipe {
   id?: number;  // recipe_id from database
   title: string;
@@ -249,18 +250,21 @@ export default function AddRecipeScreen() {
             value={manualRecipe.title}
             onChangeText={text => handleManualChange('title', text)}
             placeholder="Recipe Title"
+            placeholderTextColor="#25242477"
           />
           <TextInput
             style={styles.input}
             value={manualRecipe.cookTime}
             onChangeText={text => handleManualChange('cookTime', text)}
             placeholder="Cook Time (e.g. 30 minutes)"
+            placeholderTextColor="#25242477"
           />
           <TextInput
             style={styles.input}
             value={manualRecipe.difficulty}
             onChangeText={text => handleManualChange('difficulty', text)}
             placeholder="Difficulty (Easy/Medium/Hard)"
+            placeholderTextColor="#25242477"
           />
           <TextInput
             style={styles.input}
@@ -268,6 +272,7 @@ export default function AddRecipeScreen() {
             onChangeText={text => handleManualChange('servings', parseInt(text) || 1)}
             placeholder="Servings"
             keyboardType="numeric"
+            placeholderTextColor="#25242477"
           />
 
           <Text style={styles.sectionTitle}>Ingredients</Text>
@@ -278,6 +283,7 @@ export default function AddRecipeScreen() {
               value={ingredient}
               onChangeText={text => handleManualIngredientChange(idx, text)}
               placeholder={`Ingredient ${idx + 1}`}
+              placeholderTextColor="#25242477"
             />
           ))}
           <TouchableOpacity style={styles.addFieldButton} onPress={addManualIngredient}>
@@ -292,6 +298,7 @@ export default function AddRecipeScreen() {
               value={step}
               onChangeText={text => handleManualStepChange(idx, text)}
               placeholder={`Step ${idx + 1}`}
+              placeholderTextColor="#25242477"
             />
           ))}
           <TouchableOpacity style={styles.addFieldButton} onPress={addManualStep}>

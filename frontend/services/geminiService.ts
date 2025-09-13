@@ -32,7 +32,6 @@ export interface Item {
   name: string;
   date_bought: string;
   price: number;
-  shelf_life_days?: number | null;
   estimated_expiration?: string | null;
   storage_location?: string; // optional for frontend edits
 }
