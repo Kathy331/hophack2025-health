@@ -1,18 +1,22 @@
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-python-multipart>=0.0.6          # For file uploads
-google-generativeai>=0.3.0
-python-dotenv>=1.0.0
-Pillow>=10.0.0
-pydantic>=2.5.0
+# Core dependencies
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+python-multipart==0.0.20
+pydantic==2.11.7
+httpx>=0.26,<0.29
+websockets==12.0
 
+# AI and Media Processing
+google-generativeai==0.8.5
+supabase==1.0.3  # Using older version that doesn't require websockets.asyncio
+python-dotenv==1.1.1
 
-# NEW dependencies for video processing
-youtube-transcript-api>=0.6.0     # Get YouTube captions (FREE!) !!!
-yt-dlp>=2023.10.0                # Download video/audio from multiple platforms
-openai-whisper>=20231117         # Audio transcription (fallback)
-ffmpeg-python>=0.2.0             # Audio processing
+# Video Processing
+youtube-transcript-api==1.2.2
+yt-dlp==2025.9.5
+openai-whisper==20250625
+ffmpeg-python==0.2.0
 
-# Optional: For production deployment
-gunicorn>=21.2.0                 # WSGI server alternative
-# redis>=5.0.0                     # Caching (optional)
+# Optional Production Dependencies
+gunicorn==23.0.0
+Pillow==11.2.1
