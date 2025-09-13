@@ -14,19 +14,26 @@ export default function AuthIndex() {
   const handleSignup = async () => {
     setError(null);
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      setError(error.message);
+    // 1️⃣ Sign up
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+    if (signUpError) {
+      setError(signUpError.message);
       return;
     }
 
-    if (data.user) {
-      try {
-        await createProfile(data.user.id, username);
-        router.replace("/(tabs)/(home)" as const);
-      } catch (err: any) {
-        setError(err.message);
-      }
+    // 2️⃣ Immediately sign in (skips waiting for email confirmation)
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError || !signInData.user) {
+      setError(signInError?.message || "Failed to sign in after signup");
+      return;
+    }
+
+    // 3️⃣ Create profile in your DB
+    try {
+      await createProfile(signInData.user.id, username);
+      router.replace("/(tabs)/(home)" as const);
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
@@ -35,9 +42,27 @@ export default function AuthIndex() {
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <Text style={styles.title}>Sign Up</Text>
 
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} keyboardType="email-address" autoCapitalize="none" />
-      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
-      <TextInput placeholder="Username" value={username} onChangeText={setUsername} style={styles.input} />
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        style={styles.input}
+      />
 
       {error && <Text style={styles.error}>{error}</Text>}
 

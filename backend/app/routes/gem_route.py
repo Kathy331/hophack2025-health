@@ -1,13 +1,35 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from services.gem_service import parse_receipt, analyze_image
+from services.item_service import insert_items_into_supabase
 
 router = APIRouter()
 
 @router.post("/parse-receipt")
-async def parse_receipt_endpoint(file: UploadFile = File(...)):
-    image_bytes = await file.read()
-    parsed_json = parse_receipt(image_bytes)
-    return {"parsed": parsed_json}
+async def parse_receipt_endpoint(
+    file: UploadFile = File(...),
+    user_uuid: str = Form(...)  # <-- accept user UUID from frontend
+):
+    """
+    Endpoint to parse a receipt image and insert items into Supabase.
+    Expects:
+    - file: receipt image
+    - user_uuid: Supabase auth UUID from frontend
+    """
+    try:
+        # Read image bytes
+        image_bytes = await file.read()
+
+        # Parse receipt JSON
+        parsed_json = parse_receipt(image_bytes)
+
+        # Insert items into Supabase under this user
+        insert_items_into_supabase(user_uuid, parsed_json)
+
+        return {"parsed": parsed_json}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/analyze-image")
 async def analyze_image_endpoint(file: UploadFile = File(...)):

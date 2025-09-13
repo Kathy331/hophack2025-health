@@ -20,10 +20,26 @@ def parse_receipt(image_bytes: bytes) -> dict:
     model = genai.GenerativeModel("gemini-2.5-flash")
 
     prompt = (
-        "1. Extract food items and their estimated shelf life in days. 2. Extract the date the items were bought and use this to estimate the shelf life 3. Extract the price of the items"
-        "Return JSON strictly in this format:\n"
-        "{ 'items': [ { 'name': str, 'shelf_life_days': int , 'date_bought': YYYY-MM-DD, 'price': number} ] }"
+        "You are given a receipt image. Extract structured information about each item.\n"
+        "1. Extract each food or consumable item and estimate its shelf life in days based on typical storage conditions.\n"
+        "   - If the item is non-perishable (not edible), set 'shelf_life_days' to null.\n"
+        "   - If you cannot determine the date bought, assume it is today.\n"
+        "2. Extract the date the items were bought (YYYY-MM-DD) if available.\n"
+        "3. Extract the price of each item; if unknown, use 0.00.\n"
+        "Return the result strictly in the following JSON format:\n"
+        "{\n"
+        "  'items': [\n"
+        "    {\n"
+        "      'name': str, \n"
+        "      'shelf_life_days': int|null, \n"
+        "      'date_bought': 'YYYY-MM-DD', \n"
+        "      'price': number\n"
+        "    }\n"
+        "  ]\n"
+        "}\n"
+        "Use realistic estimates for shelf life based on common knowledge (e.g., milk ~7 days, bread ~3 days, canned goods ~365 days)."
     )
+
 
     # Generate content
     response = model.generate_content([prompt, image])
