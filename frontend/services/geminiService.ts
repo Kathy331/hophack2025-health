@@ -1,5 +1,6 @@
 const backendUrl = "https://bb1a46504891.ngrok-free.app";
 
+
 export const sendReceiptToBackend = async (imageUri: string) => {
   try {
     const formData = new FormData();
