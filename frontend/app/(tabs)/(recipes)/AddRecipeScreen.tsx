@@ -220,7 +220,7 @@ export default function RecipesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#e9f5ec' }, // soft green background
-  header: { padding: 20, backgroundColor: '#b7e4c7', borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
+  header: { padding: 20, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#1b4332' },
   subtitle: { fontSize: 16, color: '#2d6a4f', marginTop: 4 },
   inputSection: { padding: 20 },
