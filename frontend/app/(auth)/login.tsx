@@ -26,10 +26,11 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#eaf8ea" />
-      <Text style={styles.title}>🌱 Log In</Text>
+      <Text style={styles.title}>🌱 Log Into Gobble</Text>
 
       <TextInput
         placeholder="Email"
+        placeholderTextColor="#25242477"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
@@ -38,6 +39,7 @@ export default function Login() {
       />
       <TextInput
         placeholder="Password"
+        placeholderTextColor="#25242477"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
