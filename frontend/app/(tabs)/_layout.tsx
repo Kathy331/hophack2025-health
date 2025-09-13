@@ -18,7 +18,7 @@ export default function TabLayout() {
     <Tabs
       initialRouteName="(home)" // default tab after login
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"]?.tint || "#007AFF",
+        tabBarActiveTintColor:  '#5c8233ff',
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: Platform.select({
@@ -30,8 +30,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(home)"
         options={{
-          title: "Add",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus.circle.fill" color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color }) => <AntDesign name="home" size={24} color={color} />,
         }}
       />
       <Tabs.Screen

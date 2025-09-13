@@ -29,15 +29,13 @@ async def generate_recipe_endpoint(request: RecipeRequest):
     return {"success": True, "recipe": recipe}
 
 @router.post("/parse-receipt")
-async def parse_receipt_endpoint(
-    file: UploadFile = File(...),
-    user_uuid: str = Form(...)  # <-- accept user UUID from frontend
-):
+async def parse_receipt_endpoint(file: UploadFile = File(...)):
     """
-    Endpoint to parse a receipt image and insert items into Supabase.
+    Parse a receipt image and return structured items.
     Expects:
     - file: receipt image
-    - user_uuid: Supabase auth UUID from frontend
+    Returns:
+    - parsed JSON with items [name, date_bought, price]
     """
     try:
         # Read image bytes
@@ -45,9 +43,6 @@ async def parse_receipt_endpoint(
 
         # Parse receipt JSON
         parsed_json = parse_receipt(image_bytes)
-
-        # Insert items into Supabase under this user
-        insert_items_into_supabase(user_uuid, parsed_json)
 
         return {"parsed": parsed_json}
 
