@@ -30,6 +30,7 @@ interface ApiResponse {
 export default function RecipesScreen() {
   const [videoUrl, setVideoUrl] = useState('');
   const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Validate and normalize video URL
@@ -67,8 +68,9 @@ export default function RecipesScreen() {
       return;
     }
 
-    setLoading(true);
-    setRecipe(null);
+  setLoading(true);
+  setRecipe(null);
+  setStatusMessage(null);
 
     try {
       // Call your Python FastAPI backend
@@ -87,8 +89,19 @@ export default function RecipesScreen() {
 
       if (data.success && data.recipe) {
         setRecipe(data.recipe);
+        setStatusMessage('Transcript found and recipe generated!');
+        console.log('Transcript found, recipe:', data.recipe);
       } else {
-        Alert.alert('Error', data.error || 'Failed to generate recipe');
+        setStatusMessage(data.error ? `Transcript not found or error: ${data.error}` : 'Failed to generate recipe.');
+        console.log('Transcript error or no recipe:', data.error || data);
+        setRecipe({
+          title: '',
+          ingredients: [],
+          steps: [],
+          cookTime: '',
+          servings: 0,
+          difficulty: ''
+        });
       }
     } catch (error) {
       console.error('Recipe generation error:', error);
@@ -123,8 +136,9 @@ export default function RecipesScreen() {
         difficulty: "Easy"
       };
       
-      setRecipe(mockRecipe);
-      Alert.alert('Demo Mode', 'Showing sample recipe. Connect your backend to process real videos!');
+  setRecipe(mockRecipe);
+  setStatusMessage('Demo Mode: Showing sample recipe. Connect your backend to process real videos!');
+  // Alert.alert('Demo Mode', 'Showing sample recipe. Connect your backend to process real videos!');
     } finally {
       setLoading(false);
     }
@@ -188,6 +202,12 @@ export default function RecipesScreen() {
         )}
       </View>
 
+      {statusMessage && (
+        <Text style={{ color: statusMessage.includes('error') || statusMessage.includes('not found') ? 'red' : 'green', textAlign: 'center', marginVertical: 10 }}>
+          {statusMessage}
+        </Text>
+      )}
+
       {recipe && (
         <View style={styles.recipeSection}>
           <View style={styles.recipeHeader}>
@@ -201,21 +221,29 @@ export default function RecipesScreen() {
 
           <View style={styles.ingredientsSection}>
             <Text style={styles.sectionTitle}>Ingredients</Text>
-            {recipe.ingredients.map((ingredient, index) => (
-              <Text key={index} style={styles.ingredient}>
-                • {ingredient}
-              </Text>
-            ))}
+            {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
+              recipe.ingredients.map((ingredient, index) => (
+                <Text key={index} style={styles.ingredient}>
+                  • {ingredient}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.ingredient}>No ingredients found.</Text>
+            )}
           </View>
 
           <View style={styles.stepsSection}>
             <Text style={styles.sectionTitle}>Instructions</Text>
-            {recipe.steps.map((step, index) => (
-              <View key={index} style={styles.step}>
-                <Text style={styles.stepNumber}>{index + 1}</Text>
-                <Text style={styles.stepText}>{step}</Text>
-              </View>
-            ))}
+            {Array.isArray(recipe.steps) && recipe.steps.length > 0 ? (
+              recipe.steps.map((step, index) => (
+                <View key={index} style={styles.step}>
+                  <Text style={styles.stepNumber}>{index + 1}</Text>
+                  <Text style={styles.stepText}>{step}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.ingredient}>No instructions found.</Text>
+            )}
           </View>
         </View>
       )}
