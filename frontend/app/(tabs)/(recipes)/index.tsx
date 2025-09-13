@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Linking
 } from 'react-native';
+const backendUrl = "https://95c506bce95d.ngrok-free.app";
 
 interface Recipe {
   title: string;
@@ -71,7 +72,7 @@ export default function RecipesScreen() {
 
     try {
       // Call your Python FastAPI backend
-      const response = await fetch('http://localhost:8000/generate-recipe', {
+      const response = await fetch(`${backendUrl}/api/generate-recipe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
