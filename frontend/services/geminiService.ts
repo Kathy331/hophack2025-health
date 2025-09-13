@@ -1,7 +1,7 @@
 
 const backendUrl = "https://acf6653506e9.ngrok-free.app";
 
-export const sendReceiptToBackend = async (imageUri: string, userId: string) => {
+export const sendReceiptToBackend = async (imageUri: string) => {
   try {
     const formData = new FormData();
     formData.append("file", {
@@ -9,9 +9,6 @@ export const sendReceiptToBackend = async (imageUri: string, userId: string) => 
       type: "image/jpeg",
       name: "receipt.jpg",
     } as any);
-
-    // Pass the logged-in user's UUID
-    formData.append("user_uuid", userId);
 
     const response = await fetch(`${backendUrl}/gem/parse-receipt`, {
       method: "POST",
@@ -23,10 +20,48 @@ export const sendReceiptToBackend = async (imageUri: string, userId: string) => 
       throw new Error(`Server error ${response.status}: ${text}`);
     }
 
+    // This will be { parsed: { items: [...] } }
     const data = await response.json();
-    return data.parsed;
+    return data.parsed; // parsed JSON with items
   } catch (error) {
     console.error("Error sending receipt to backend:", error);
+    throw error;
+  }
+};
+
+export interface Item {
+  name: string;
+  date_bought: string;
+  price: number;
+  shelf_life_days?: number | null;
+  estimated_expiration?: string | null;
+  storage_location?: string; // optional for frontend edits
+}
+
+export interface FinalizeItemsPayload {
+  user_uuid: string;
+  items_json: { items: Item[] };
+}
+
+export const finalizeItems = async (payload: FinalizeItemsPayload) => {
+  try {
+    const response = await fetch(`${backendUrl}/item/finalize-items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Server error ${response.status}: ${text}`);
+    }
+
+    const data = await response.json();
+    return data; // e.g., { status: "success", result: ... }
+  } catch (error) {
+    console.error("Error finalizing items:", error);
     throw error;
   }
 };

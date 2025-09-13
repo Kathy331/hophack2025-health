@@ -56,6 +56,7 @@ def generate_recipe(video_url: str, platform: str) -> dict:
     if not recipe:
         return {"success": False, "error": "Gemini did not return a valid recipe.", "transcript": transcript_text}
     return {"success": True, "recipe": recipe, "transcript": transcript_text}
+
 import os
 import io
 import json
@@ -79,33 +80,55 @@ def parse_receipt(image_bytes: bytes) -> dict:
 
     prompt = (
         "You are given a receipt image. Extract structured information about each item.\n"
-        "1. Extract each food or consumable item and estimate its shelf life in days based on typical storage conditions.\n"
-        "   - If the item is non-perishable (not edible), set 'shelf_life_days' to null.\n"
-        "   - If you cannot determine the date bought, assume it is today.\n"
-        "2. Extract the date the items were bought (YYYY-MM-DD) if available.\n"
+        "1. Extract each food or consumable item purchased.\n"
+        "2. Extract the purchase date (YYYY-MM-DD) if available; if not, use today's date.\n"
         "3. Extract the price of each item; if unknown, use 0.00.\n"
-        "Return the result strictly in the following JSON format:\n"
+        "4. Estimate the expiration date for perishable items (YYYY-MM-DD). If unknown or non-perishable, use null.\n"
+        "Return the result strictly in valid JSON with double quotes. Example:\n"
         "{\n"
-        "  'items': [\n"
+        "  \"items\": [\n"
         "    {\n"
-        "      'name': str, \n"
-        "      'shelf_life_days': int|null, \n"
-        "      'date_bought': 'YYYY-MM-DD', \n"
-        "      'price': number\n"
+        "      \"name\": \"Milk\",\n"
+        "      \"date_bought\": \"2025-09-13\",\n"
+        "      \"price\": 3.50,\n"
+        "      \"estimated_expiration\": \"2025-09-20\"\n"
+        "    },\n"
+        "    {\n"
+        "      \"name\": \"Canned Beans\",\n"
+        "      \"date_bought\": \"2025-09-13\",\n"
+        "      \"price\": 1.20,\n"
+        "      \"estimated_expiration\": null\n"
         "    }\n"
         "  ]\n"
         "}\n"
-        "Use realistic estimates for shelf life based on common knowledge (e.g., milk ~7 days, bread ~3 days, canned goods ~365 days)."
+        "Do not include explanations or extra text."
     )
 
 
     # Generate content
     response = model.generate_content([prompt, image])
-
-    response = model.generate_content([prompt, image])
     print(safe_parse_gemini_response(response.text))
     return safe_parse_gemini_response(response.text)
 
+def predict_expirations(items_payload: dict) -> dict:
+    """
+    Takes the user's submitted items JSON and predicts/fills in missing expiration dates
+    using Gemini, without changing other fields.
+    """
+    model = genai.GenerativeModel("gemini-2.5-flash")
+
+    prompt = (
+        "You are a food AI assistant. Here is a list of items with optional estimated_expiration:\n"
+        f"{json.dumps(items_payload)}\n"
+        "For items where 'estimated_expiration' is null, predict a realistic expiration date "
+        "based on the item name. Ensure the expiration date is never before 'date_bought'. "
+        "Do not change any other fields. Return the same JSON structure with only the "
+        "'estimated_expiration' fields filled where missing."
+        "Keep the price the exact same."
+    )
+
+    response = model.generate_content(prompt)
+    return safe_parse_gemini_response(response.text)
 
 def analyze_image(image_bytes: bytes) -> dict:
     image = Image.open(io.BytesIO(image_bytes))
@@ -118,7 +141,6 @@ def analyze_image(image_bytes: bytes) -> dict:
     response = model.generate_content([prompt, image])
     print(safe_parse_gemini_response(response.text))
     return safe_parse_gemini_response(response.text)
-
 
 
 #fixes critical error where front end returns empty json bc there were spaces in the gemini response. Deletes any whitespace
