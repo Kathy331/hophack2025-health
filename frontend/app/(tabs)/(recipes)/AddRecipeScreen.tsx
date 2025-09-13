@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const backendUrl = "https://501ff1f547e0.ngrok-free.app";
 
@@ -35,6 +36,7 @@ export default function AddRecipeScreen() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   // Manual input state
   const [showManualInput, setShowManualInput] = useState(false);
@@ -321,6 +323,18 @@ export default function AddRecipeScreen() {
 
       {recipe && (
         <View style={styles.recipeSection}>
+          {/* Bookmark icon in top right */}
+          <TouchableOpacity
+            style={styles.bookmarkIcon}
+            onPress={() => setIsBookmarked((prev) => !prev)}
+            accessibilityLabel={isBookmarked ? "Remove bookmark" : "Bookmark recipe"}
+          >
+            <MaterialIcons
+              name={isBookmarked ? "bookmark" : "bookmark-border"}
+              size={32}
+              color={isBookmarked ? "#52b788" : "#b7b7b7"}
+            />
+          </TouchableOpacity>
           <Text style={styles.recipeTitle}>{recipe.title || 'Unnamed Recipe'}</Text>
           <View style={styles.recipeMetrics}>
             <Text style={styles.metric}>⏱️ {recipe.cookTime}</Text>
@@ -367,13 +381,15 @@ const styles = StyleSheet.create({
   primaryButton: { backgroundColor: '#52b788' },
   secondaryButton: { backgroundColor: '#fff', borderWidth: 2, borderColor: '#52b788' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  secondaryButtonText: { color: '#52b788', fontSize: 16, fontWeight: 'bold' },
+  secondaryButtonText: { color: '#52b788', fontSize: 16, fontWeight: 'bold', paddingHorizontal: 20 },
   platformText: { marginTop: 8, textAlign: 'center', color: '#40916c' },
   statusText: { textAlign: 'center', marginVertical: 10, fontWeight: '600', color: '#1b4332' },
   transcriptBox: { backgroundColor: '#d8f3dc', margin: 10, padding: 10, borderRadius: 12 },
   transcriptTitle: { fontWeight: 'bold', marginBottom: 5, color: '#1b4332' },
   transcriptText: { fontSize: 13, color: '#081c15' },
-  recipeSection: { backgroundColor: '#fff', margin: 10, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 },
+  recipeSection: { backgroundColor: '#fff', margin: 10, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.05,
+    shadowRadius: 5,
+    position: 'relative',},
   recipeTitle: { fontSize: 24, fontWeight: 'bold', color: '#1b4332', marginBottom: 12 },
   recipeMetrics: { flexDirection: 'row', justifyContent: 'space-around', backgroundColor: '#d8f3dc', borderRadius: 10, padding: 12, marginBottom: 20 },
   metric: { fontSize: 14, color: '#40916c', fontWeight: '600' },
@@ -385,4 +401,5 @@ const styles = StyleSheet.create({
   manualInputSection: { backgroundColor: '#f0fff4', margin: 15, borderRadius: 16, padding: 20, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3 },
   addFieldButton: { backgroundColor: '#d8f3dc', borderRadius: 8, padding: 10, alignItems: 'center', marginVertical: 6 },
   addFieldButtonText: { color: '#40916c', fontWeight: 'bold' },
+  bookmarkIcon: { position: 'absolute', top: 16, right: 16, zIndex: 10 },
 });
