@@ -118,7 +118,10 @@ export default function AddRecipeScreen() {
           (data.recipe && typeof data.recipe === 'object' && 'recipe' in data.recipe && typeof (data.recipe as any).recipe === 'object')
             ? (data.recipe as any).recipe
             : data.recipe;
-        setRecipe(recipeObj);
+        setRecipe({
+          ...recipeObj,
+          url: videoUrl  // Include the video URL in the recipe
+        });
         setStatusMessage('✅ Recipe generated successfully!');
         setTranscript(data.transcript || null);
       } else {
