@@ -7,7 +7,6 @@ from services.item_service import insert_items_into_supabase
 
 router = APIRouter()
 
-
 # Request model for recipe generation
 class RecipeRequest(BaseModel):
     videoUrl: str
