@@ -47,7 +47,7 @@
     pip install -r requirements.txt
     ```
     use `deactivate` command to exit the virtual environment
-6. adding const backendUrl =
+6. !!!adding const backendUrl =
     -add your ngrok url in the frontend/app/(tabs)/(recipes)/index.tsx file
     -add your ngrok url in geminiService in the frontend/app/services
 7. OVERVIEW (dev-start): start the expo app with tunnel option
