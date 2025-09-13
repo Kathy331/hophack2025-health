@@ -11,8 +11,10 @@ import {
   Linking,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
+import { supabase } from '../../../supabaseClient';
 
-const backendUrl = "https://501ff1f547e0.ngrok-free.app";
+const backendUrl = "https://4c113d0b753c.ngrok-free.app";
 
 interface Recipe {
   title: string;
@@ -64,6 +66,27 @@ export default function AddRecipeScreen() {
     if (url.includes('instagram.com')) return 'Instagram';
     if (url.includes('tiktok.com')) return 'TikTok';
     return 'Unknown';
+  };
+  const handleBookmark = async () => {
+    // Get the current user from supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !recipe) {
+      Alert.alert("You must be logged in to save recipes.");
+      return;
+    }
+    try {
+      if (!isBookmarked) {
+        await saveRecipeToSupabase(recipe, user.id);
+        setIsBookmarked(true);
+        setStatusMessage("Recipe saved!");
+      } else {
+        await deleteRecipeFromSupabase(recipe, user.id);
+        setIsBookmarked(false);
+        setStatusMessage("Recipe removed from saved!");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to update bookmark.");
+    }
   };
 
   const generateRecipe = async () => {
@@ -326,7 +349,7 @@ export default function AddRecipeScreen() {
           {/* Bookmark icon in top right */}
           <TouchableOpacity
             style={styles.bookmarkIcon}
-            onPress={() => setIsBookmarked((prev) => !prev)}
+            onPress={handleBookmark}
             accessibilityLabel={isBookmarked ? "Remove bookmark" : "Bookmark recipe"}
           >
             <MaterialIcons

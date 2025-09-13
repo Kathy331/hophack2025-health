@@ -1,4 +1,13 @@
-const backendUrl = "https://501ff1f547e0.ngrok-free.app"; // replace with your backend
+const backendUrl = "https://4c113d0b753c.ngrok-free.app"; // replace with your backend
+
+export interface Recipe {
+  title: string;
+  ingredients: string[];
+  steps: string[];
+  cookTime: string;
+  servings: number;
+  difficulty: string;
+}
 
 export const createProfile = async (id: string, username: string, avatar?: string) => {
   try {
@@ -22,4 +31,24 @@ export const createProfile = async (id: string, username: string, avatar?: strin
     console.error("Error creating profile:", error);
     throw error;
   }
+};
+
+export const saveRecipeToSupabase = async (recipe: Recipe, userId: string) => {
+  const response = await fetch(`${backendUrl}/user/save_recipe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ recipe, userId }),
+  });
+  if (!response.ok) throw new Error("Failed to save recipe");
+  return response.json();
+};
+
+export const deleteRecipeFromSupabase = async (recipe: Recipe, userId: string) => {
+  const response = await fetch(`${backendUrl}/user/delete_recipe`, {
+    method: "POST", // or "DELETE" if your backend supports it
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ recipe, userId }),
+  });
+  if (!response.ok) throw new Error("Failed to delete recipe");
+  return response.json();
 };
