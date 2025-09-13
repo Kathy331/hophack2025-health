@@ -61,7 +61,7 @@ export default function Index() {
       />
     </View>
   );
-}
+  }
 
 const styles = StyleSheet.create({
   container: {

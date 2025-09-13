@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, TextInput, Switch, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-
 export default function ProfileSettingsUI() {
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
@@ -46,7 +45,7 @@ export default function ProfileSettingsUI() {
       </TouchableOpacity>
     </ScrollView>
   );
-}
+  }
 
 const styles = StyleSheet.create({
   container: {

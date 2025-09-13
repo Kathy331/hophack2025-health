@@ -8,12 +8,10 @@
    npm install
    ```
 
-2. ngrok is used to expose the backend server to the internet so that the expo app can access it
+2. ngrok is used to expose the backend server to the internet so that the expo app can access it. set up ngrok account from https://dashboard.ngrok.com/signup and after logging in, go to https://dashboard.ngrok.com/get-started/your-authtoken and copy your authtoken.
     ```bash
     npm install -g ngrok
     ```
-  set up ngrok account from https://dashboard.ngrok.com/signup and after logging in, go to https://dashboard.ngrok.com/get-started/your-authtoken and copy your authtoken.
-
     ```bash
     ngrok config add-authtoken <your-authtoken>
     ```
@@ -49,8 +47,10 @@
     pip install -r requirements.txt
     ```
     use `deactivate` command to exit the virtual environment
-
-6. OVERVIEW (dev-start): start the expo app with tunnel option
+6. adding const backendUrl =
+    -add your ngrok url in the frontend/app/(tabs)/(recipes)/index.tsx file
+    -add your ngrok url in geminiService in the frontend/app/services
+7. OVERVIEW (dev-start): start the expo app with tunnel option
     ### nrgrok command in terminal A
     ```bash
     ngrok http 3000

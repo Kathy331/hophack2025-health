@@ -87,7 +87,7 @@ const otherSections: Section[] = [
 ];
 
 export default function CommunityLayout() {
-  const renderItem = ({ item, section }: { item: Item; section: Section }) => {
+   const renderItem = ({ item, section }: { item: Item; section: Section }) => {
     const isReminderOrUntitled = section.title === 'Reminders' || !section.title;
 
     return (
@@ -128,9 +128,8 @@ export default function CommunityLayout() {
 
   const renderSectionHeader = ({ section: { title } }: { section: Section }) =>
     title ? <Text style={styles.header}>{title}</Text> : null;
-
-  return (
-    <SafeAreaView style={styles.container}>
+return (
+   <SafeAreaView style={styles.container}>
       {/* ✅ First SectionList for Reminders */}
       <SectionList
         sections={remindersSections}
@@ -159,7 +158,7 @@ export default function CommunityLayout() {
       <ExpoStatusBar style="auto" />
     </SafeAreaView>
   );
-}
+  }
 
 const styles = StyleSheet.create({
   container: {
