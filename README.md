@@ -5,13 +5,20 @@
 1. Install dependencies
 
    ```bash
+   cd frontend
+   npm install
+   ```
+
+   ```bash
+   cd ..
+   cd backend
    npm install
    ```
 
 2. Start the app
 
    ```bash
-   npx expo start
+   npx expo start --tunnel
    ```
 3. Get a Gemini API key from https://aistudio.google.com/app/apikey
 
