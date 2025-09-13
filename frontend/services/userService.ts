@@ -1,4 +1,4 @@
-const backendUrl = "https://76ade21c566a.ngrok-free.app"; // replace with your backend
+const backendUrl = "https://501ff1f547e0.ngrok-free.app"; // replace with your backend
 
 export const createProfile = async (id: string, username: string, avatar?: string) => {
   try {

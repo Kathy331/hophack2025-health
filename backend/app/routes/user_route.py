@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.services.user_service import create_profile_in_db
+from services.user_service import create_profile_in_db
 
 router = APIRouter()
 
