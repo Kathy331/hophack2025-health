@@ -10,11 +10,12 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
 import { supabase } from '../../../supabaseClient';
 
-const backendUrl = "https://cb8c567821c0.ngrok-free.app";
+const backendUrl = "https://acf6653506e9.ngrok-free.app";
 
 interface Recipe {
   id?: number;  // recipe_id from database
