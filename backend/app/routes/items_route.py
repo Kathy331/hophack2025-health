@@ -19,6 +19,9 @@ async def finalize_items_endpoint(payload: ItemsPayload):
     3. Return a clean response with inserted items.
     """
     # Step 1: Predict missing expiration dates using Gemini
+    print(f"PAYLOAD_ORIGIN: {payload}") # we get 0 price here, so the price field is never actually filled
+    print()
+    print(f"PAYLOAD: {payload.items_json}")
     items_with_predicted_exp = predict_expirations(payload.items_json)
     # print(items_with_predicted_exp)
     # Step 2: Insert into Supabase  

@@ -22,7 +22,9 @@ interface ParsedItem {
   name: string;
   estimated_expiration: string | null;
   storage_option: 'F' | 'R' | 'S' | null;
+  price: number; // add this
 }
+
 
 export default function ScanReceiptScreen() {
   const [scannedReceipts, setScannedReceipts] = useState<string[]>([]);
@@ -133,15 +135,17 @@ export default function ScanReceiptScreen() {
       for (const uri of scannedReceipts) {
         const parsed = await sendReceiptToBackend(uri);
         if (parsed.items && Array.isArray(parsed.items)) {
-          parsed.items.forEach((item: { name: string; estimated_expiration?: string }) => {
+          parsed.items.forEach((item: { name: string; estimated_expiration?: string; price?: number }) => {
             allParsedItems.push({ 
               name: item.name, 
               estimated_expiration: item.estimated_expiration || null, 
-              storage_option: null 
+              storage_option: null,
+              price: item.price ?? 0, // keep actual price if present
             });
           });
         }
       }
+      
 
       setParsedItems(allParsedItems);
       setModalVisible(true);
@@ -193,13 +197,14 @@ export default function ScanReceiptScreen() {
         items_json: {
           items: parsedItems.map(item => ({
             name: item.name,
-            date_bought: new Date().toISOString().split("T")[0], // default today
-            price: 0, // default price if you don’t have one
+            date_bought: new Date().toISOString().split("T")[0],
+            price: item.price ?? 0, // use item's price if defined, otherwise 0
             estimated_expiration: item.estimated_expiration || undefined,
-            storage_location: item.storage_option || undefined, // <--- undefined instead of null
+            storage_location: item.storage_option || undefined,
           })),
         },
       };
+      
   
       const result = await finalizeItems(payload);
       Alert.alert("Success", "Items submitted successfully!");

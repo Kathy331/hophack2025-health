@@ -1,4 +1,3 @@
-
 const backendUrl = "https://1f517d5f5d00.ngrok-free.app";
 
 export const sendReceiptToBackend = async (imageUri: string) => {
@@ -33,7 +32,6 @@ export interface Item {
   name: string;
   date_bought: string;
   price: number;
-  shelf_life_days?: number | null;
   estimated_expiration?: string | null;
   storage_location?: string; // optional for frontend edits
 }
