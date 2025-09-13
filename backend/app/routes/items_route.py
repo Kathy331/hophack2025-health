@@ -23,6 +23,7 @@ async def finalize_items_endpoint(payload: ItemsPayload):
     # print(items_with_predicted_exp)
     # Step 2: Insert into Supabase  
     print(payload.user_uuid)
+    print(items_with_predicted_exp)
     result = await insert_items_into_supabase(payload.user_uuid, items_with_predicted_exp)
 
     # Step 3: Return clean response

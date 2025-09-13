@@ -56,6 +56,7 @@ def generate_recipe(video_url: str, platform: str) -> dict:
     if not recipe:
         return {"success": False, "error": "Gemini did not return a valid recipe.", "transcript": transcript_text}
     return {"success": True, "recipe": recipe, "transcript": transcript_text}
+
 import os
 import io
 import json
@@ -120,8 +121,10 @@ def predict_expirations(items_payload: dict) -> dict:
         "You are a food AI assistant. Here is a list of items with optional estimated_expiration:\n"
         f"{json.dumps(items_payload)}\n"
         "For items where 'estimated_expiration' is null, predict a realistic expiration date "
-        "based on the item name. Do not change any other fields. Return the same JSON structure "
-        "with only the 'estimated_expiration' fields filled where missing."
+        "based on the item name. Ensure the expiration date is never before 'date_bought'. "
+        "Do not change any other fields. Return the same JSON structure with only the "
+        "'estimated_expiration' fields filled where missing."
+        "Keep the price the exact same."
     )
 
     response = model.generate_content(prompt)
