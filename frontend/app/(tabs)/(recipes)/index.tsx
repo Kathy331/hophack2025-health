@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Linking
 } from 'react-native';
-const backendUrl = "https://95c506bce95d.ngrok-free.app";
+const backendUrl = "https://7a483dd50cde.ngrok-free.app";
 
 interface Recipe {
   title: string;
