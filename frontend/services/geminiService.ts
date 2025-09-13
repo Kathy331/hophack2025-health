@@ -1,7 +1,5 @@
-// geminiService.ts
-import Constants from 'expo-constants';
+const backendUrl = "https://435fab602126.ngrok-free.app";
 
-const backendUrl = Constants.expoConfig?.extra?.NGROK_FORWARDING || process.env.NGROK_FORWARDING || "http://localhost:3000";
 
 export const sendReceiptToBackend = async (imageUri: string) => {
   try {
@@ -10,12 +8,11 @@ export const sendReceiptToBackend = async (imageUri: string) => {
       uri: imageUri,
       type: "image/jpeg",
       name: "receipt.jpg",
-    } as any); // 'as any' fixes TypeScript issue with FormData
+    } as any);
 
-    const response = await fetch(`${backendUrl}/parse-receipt`, {
+    const response = await fetch(`${backendUrl}/gem/parse-receipt`, {  // <-- add /gem
       method: "POST",
       body: formData,
-      // Do NOT set 'Content-Type'; let fetch handle it
     });
 
     if (!response.ok) {
@@ -23,7 +20,7 @@ export const sendReceiptToBackend = async (imageUri: string) => {
     }
 
     const data = await response.json();
-    return data.parsed; // JSON returned by backend
+    return data.parsed;
   } catch (error) {
     console.error("Error sending receipt to backend:", error);
     throw error;
@@ -39,10 +36,9 @@ export const analyzeImageWithGemini = async (imageUri: string) => {
       name: "food.jpg",
     } as any);
 
-    const response = await fetch(`${backendUrl}/analyze-image`, {
+    const response = await fetch(`${backendUrl}/gem/analyze-image`, {  // <-- add /gem
       method: "POST",
       body: formData,
-      // Do NOT set 'Content-Type'; let fetch handle it
     });
 
     if (!response.ok) {
@@ -50,7 +46,7 @@ export const analyzeImageWithGemini = async (imageUri: string) => {
     }
 
     const data = await response.json();
-    return data.analysis; // JSON returned by backend
+    return data.analysis;
   } catch (error) {
     console.error("Error sending image to backend:", error);
     throw error;
