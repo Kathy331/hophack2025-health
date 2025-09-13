@@ -18,14 +18,10 @@ export default function ImageUploadScreen() {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // === ORIGINAL LOGIC, UNCHANGED ===
   const requestPermission = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(
-        'Permission Required',
-        'Sorry, we need camera roll permissions to upload photos.'
-      );
+      Alert.alert('Permission Required', 'We need access to your photos to continue.');
       return false;
     }
     return true;
@@ -47,7 +43,7 @@ export default function ImageUploadScreen() {
       if (!result.canceled && result.assets?.[0]) {
         setSelectedImages(prev => [...prev, result.assets[0].uri]);
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to pick image');
     }
   };
@@ -55,10 +51,7 @@ export default function ImageUploadScreen() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert(
-        'Permission Required',
-        'Sorry, we need camera permissions to take photos.'
-      );
+      Alert.alert('Permission Required', 'We need access to your camera.');
       return;
     }
 
@@ -72,21 +65,17 @@ export default function ImageUploadScreen() {
       if (!result.canceled && result.assets?.[0]) {
         setSelectedImages(prev => [...prev, result.assets[0].uri]);
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to take photo');
     }
   };
 
   const showImageOptions = () => {
-    Alert.alert(
-      'Select Photo',
-      'Choose how you want to add a photo',
-      [
-        { text: 'Camera', onPress: takePhoto },
-        { text: 'Photo Library', onPress: pickImageFromLibrary },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    Alert.alert('Select Photo', 'Choose how you want to add a photo', [
+      { text: 'Camera', onPress: takePhoto },
+      { text: 'Photo Library', onPress: pickImageFromLibrary },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   const removeImage = (index: number) => {
@@ -95,31 +84,15 @@ export default function ImageUploadScreen() {
 
   const uploadPhotos = async () => {
     if (selectedImages.length === 0) {
-      Alert.alert('No Photos', 'Please select at least one photo to upload.');
+      Alert.alert('No Photos', 'Please select at least one photo.');
       return;
     }
 
-    Alert.alert(
-      'Process Images',
-      'What would you like to do with your images?',
-      [
-        {
-          text: 'Analyze with AI',
-          onPress: () => analyzeImagesWithGemini()
-        },
-        {
-          text: 'Just Upload',
-          onPress: () => {
-            Alert.alert('Success', `${selectedImages.length} photo(s) uploaded!`);
-            // Handle regular upload logic here
-          }
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        }
-      ]
-    );
+    Alert.alert('Process Images', 'What would you like to do with your images?', [
+      { text: 'Analyze with AI', onPress: () => analyzeImagesWithGemini() },
+      { text: 'Just Upload', onPress: () => Alert.alert('Uploaded!', `${selectedImages.length} photo(s) uploaded!`) },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   const analyzeImagesWithGemini = async () => {
@@ -128,22 +101,20 @@ export default function ImageUploadScreen() {
     setLoading(true);
     try {
       Alert.alert('Processing...', 'Analyzing your images with AI. This may take a moment.');
-      // === Your original analysis logic should go here ===
       for (const image of selectedImages) {
-        await analyzeImageWithGemini(image); // keep your real function call
+        await analyzeImageWithGemini(image);
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Analysis Failed', 'Unable to analyze images.');
     } finally {
       setLoading(false);
     }
   };
 
-  // === STYLES ONLY CHANGED ===
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Text style={styles.title}>🌱 Add Your Photos</Text>
-
+      <Text style={styles.subtitle}>Take a picture of one or multiple food items to upload</Text>
       <TouchableOpacity style={styles.addButton} onPress={showImageOptions}>
         <Text style={styles.addButtonText}>+ Add Photo</Text>
       </TouchableOpacity>
@@ -155,10 +126,7 @@ export default function ImageUploadScreen() {
             {selectedImages.map((uri, index) => (
               <View key={index} style={styles.imageWrapper}>
                 <Image source={{ uri }} style={styles.image} />
-                <TouchableOpacity 
-                  style={styles.removeButton}
-                  onPress={() => removeImage(index)}
-                >
+                <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(index)}>
                   <Text style={styles.removeButtonText}>×</Text>
                 </TouchableOpacity>
               </View>
@@ -174,6 +142,15 @@ export default function ImageUploadScreen() {
           </Text>
         </TouchableOpacity>
       )}
+
+      {/* === Tips Section === */}
+      <View style={styles.tipContainer}>
+        <Text style={styles.tipTitle}>💡 Tips for Better Photos</Text>
+        <Text style={styles.tipText}>• Ensure good lighting for clearer results</Text>
+        <Text style={styles.tipText}>• Avoid blurry or shaky images</Text>
+        <Text style={styles.tipText}>• Center the subject(s) in the frame</Text>
+        <Text style={styles.tipText}>• Keep background minimal to avoid distractions</Text>
+      </View>
     </ScrollView>
   );
 }
@@ -181,7 +158,7 @@ export default function ImageUploadScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eaf8ea', // soft green background
+    backgroundColor: '#eaf8ea',
   },
   contentContainer: {
     padding: 20,
@@ -274,5 +251,36 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '700',
+  },
+  tipContainer: {
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 16,
+    width: '100%',
+    marginTop: 25,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    borderWidth: 1,
+    borderColor: '#d9e7d9',
+  },
+  tipTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 8,
+    color: '#1a531b',
+  },
+  tipText: {
+    fontSize: 14,
+    color: '#4d784e',
+    marginBottom: 4,
+    
+  },
+   subtitle: {
+    fontSize: 16,
+    color: '#4d784e',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
