@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,74 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { supabase } from '../../../supabaseClient'; // adjust path if needed
+import { supabase } from '../../../supabaseClient';
 import { useRouter } from 'expo-router';
 
 export default function ProfileSettingsUI() {
-  const router = useRouter(); // Must be inside component
+  const router = useRouter();
+
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Fetch user data on component mount
+  useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser(); // await here!
+      if (!user) throw new Error('No user logged in');
+
+      setEmail(user.email || '');
+
+      // Fetch username from your profiles table
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setUsername(profileData.username);
+    } catch (error: any) {
+      console.log('Fetch user error:', error.message);
+    }
+  };
+
+  fetchUser();
+}, []);
+
+
+  const handleSaveChanges = async () => {
+  setLoading(true);
+  try {
+    const { data: { user } } = await supabase.auth.getUser(); // v2 syntax
+    if (!user) throw new Error('No logged-in user');
+
+    const userId = user.id;
+
+    // Update username in profiles table
+    const { error: usernameError } = await supabase
+      .from('profiles')
+      .update({ username })
+      .eq('id', userId);
+    if (usernameError) throw usernameError;
+
+    // Update password if provided
+    if (password) {
+      const { error: passwordError } = await supabase.auth.updateUser({ password });
+      if (passwordError) throw passwordError;
+    }
+
+    Alert.alert('Success', 'Profile updated successfully!');
+    setPassword('');
+  } catch (error: any) {
+    Alert.alert('Error', error.message || 'Failed to update profile.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleLogout = async () => {
     try {
@@ -21,9 +84,7 @@ export default function ProfileSettingsUI() {
       if (error) throw error;
 
       Alert.alert('Logged Out', 'You have been logged out successfully.');
-
-      // Navigate to login screen
-      router.replace('/login'); // file-system route to login.tsx
+      router.replace('/login');
     } catch (error: any) {
       Alert.alert('Logout Error', error.message || 'Failed to log out.');
     }
@@ -40,38 +101,32 @@ export default function ProfileSettingsUI() {
       <TextInput
         style={styles.input}
         placeholder="Your username"
-        editable={false}
-        value="john_doe"
+        value={username}
+        onChangeText={setUsername}
       />
 
       <Text style={styles.label}>Email</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: '#827e7e8a' }]}
         placeholder="you@example.com"
-        editable={false}
-        value="john@example.com"
+        value={email}
+        editable={false} // Email cannot be changedg
       />
 
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.label}>New Password</Text>
       <TextInput
         style={styles.input}
         placeholder="••••••••"
         secureTextEntry={true}
-        editable={false}
-        value="password"
+        value={password}
+        onChangeText={setPassword}
       />
 
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Enable Notifications</Text>
-        <Switch value={true} disabled={true} trackColor={{ true: '#83BD75' }} />
-      </View>
-
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Private Account</Text>
-        <Switch value={false} disabled={true} trackColor={{ false: '#ccc' }} />
-      </View>
-
-      <TouchableOpacity style={styles.saveButton} disabled={true}>
+      <TouchableOpacity
+        style={[styles.saveButton, loading && { opacity: 0.5 }]}
+        onPress={handleSaveChanges}
+        disabled={loading}
+      >
         <Text style={styles.saveButtonText}>Save Changes</Text>
       </TouchableOpacity>
 
@@ -111,23 +166,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     fontSize: 16,
     marginBottom: 18,
-    color: '#888',
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 12,
-    borderColor: '#C5E1A5',
-    borderWidth: 1,
-  },
-  switchLabel: {
-    fontWeight: '600',
-    fontSize: 16,
-    color: '#2C6E49',
+    color: '#000',
   },
   saveButton: {
     backgroundColor: '#83BD75',
@@ -135,7 +174,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     marginTop: 20,
-    opacity: 0.5,
   },
   saveButtonText: {
     color: '#fff',
