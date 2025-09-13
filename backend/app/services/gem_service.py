@@ -118,13 +118,8 @@ def predict_expirations(items_payload: dict) -> dict:
     model = genai.GenerativeModel("gemini-2.5-flash")
 
     prompt = (
-        "You are a food AI assistant. Here is a list of items with optional estimated_expiration:\n"
-        f"{json.dumps(items_payload)}\n"
-        "For items where 'estimated_expiration' is null, predict a realistic expiration date "
-        "based on the item name. Ensure the expiration date is never before 'date_bought'. "
-        "Do not change any other fields. Return the same JSON structure with only the "
-        "'estimated_expiration' fields filled where missing."
-        "Keep the price the exact same."
+        "You are a food AI assistant. Here is a json with an estimated_expiration date:\n"
+        f"{json.dumps(items_payload)}\n and other items. Return the exact same JSON except for estimated_expiration date, predict a realistic expiration date based on the state of storage_location they are in (R stands for refridgerated food, F is for freezer, and S is for shelf)."
     )
 
     response = model.generate_content(prompt)
