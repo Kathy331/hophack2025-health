@@ -97,18 +97,89 @@ export default function ImageUploadScreen() {
     }
 
     Alert.alert(
-      'Success',
-      `${selectedImages.length} photo(s) ready to upload!`,
+      'Process Images',
+      'What would you like to do with your images?',
       [
         {
-          text: 'OK',
+          text: 'Analyze with AI',
+          onPress: () => analyzeImagesWithGemini()
+        },
+        {
+          text: 'Just Upload',
           onPress: () => {
-            // Optionally clear images after "upload"
-            // setSelectedImages([]);
+            Alert.alert('Success', `${selectedImages.length} photo(s) uploaded!`);
+            // Handle regular upload logic here
           }
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel'
         }
       ]
     );
+  };
+
+  const analyzeImagesWithGemini = async () => {
+    if (selectedImages.length === 0) return;
+
+    try {
+      // Show loading state
+      Alert.alert('Processing...', 'Analyzing your images with AI. This may take a moment.');
+
+      // Import the service (you'll need to create this file)
+      const { geminiService } = await import('../../../services/geminiService');
+
+      if (selectedImages.length === 1) {
+        const result = await geminiService.analyzeImage(
+          selectedImages[0],
+          'Analyze this image and describe what you see in detail'
+        );
+        
+        Alert.alert(
+          'AI Analysis Result',
+          result.analysis,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Optionally clear images or save results
+                console.log('Analysis completed:', result);
+              }
+            }
+          ]
+        );
+      } else {
+        const result = await geminiService.analyzeMultipleImages(
+          selectedImages,
+          'Analyze these images and describe what you see in each one'
+        );
+        
+        let analysisText = '';
+        result.results.forEach((img, index) => {
+          analysisText += `Image ${index + 1}:\n${img.analysis}\n\n`;
+        });
+
+        Alert.alert(
+          'AI Analysis Results',
+          analysisText,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                console.log('Multiple analysis completed:', result);
+              }
+            }
+          ]
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        'Analysis Failed',
+        'Unable to analyze images. Please check your connection and try again.',
+        [{ text: 'OK' }]
+      );
+      console.error('Gemini analysis error:', error);
+    }
   };
 
   return (

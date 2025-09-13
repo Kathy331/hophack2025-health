@@ -10,7 +10,7 @@ import {
   Dimensions 
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-
+import { sendReceiptToBackend } from '../../../services/geminiService';
 const { width } = Dimensions.get('window');
 
 export default function ScanReceiptScreen() {
@@ -115,23 +115,26 @@ export default function ScanReceiptScreen() {
       return;
     }
 
-    Alert.alert(
-      'Processing Receipts',
-      `Processing ${scannedReceipts.length} receipt(s)...`,
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            //TODO: Implement OCR processing logic here
-            // Here you would typically send to OCR service
-            Alert.alert('Success', 'Receipts processed successfully!');
-            // Optionally clear receipts after processing
-            // setScannedReceipts([]);
-          }
-        }
-      ]
-    );
+    try {
+      Alert.alert('Processing Receipts', `Processing ${scannedReceipts.length} receipt(s)...`);
+
+      const allParsedResults = [];
+
+      for (const uri of scannedReceipts) {
+        const parsed = await sendReceiptToBackend(uri);
+        allParsedResults.push(parsed);
+      }
+
+      console.log("Parsed Receipts:", allParsedResults);
+      Alert.alert('Success', 'Receipts processed successfully! Check console for JSON.');
+
+      // Optionally: clear receipts after processing
+      // setScannedReceipts([]);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to process receipts. See console for details.');
+    }
   };
+
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
