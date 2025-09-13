@@ -1,5 +1,5 @@
 // geminiService.ts
-const backendUrl = "https://63a45431911d.ngrok-free.app";
+const backendUrl = "https://ad1548fa158e.ngrok-free.app";
 
 export const sendReceiptToBackend = async (imageUri: string) => {
   try {

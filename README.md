@@ -12,7 +12,7 @@
    ```bash
    cd ..
    cd backend
-   npm install
+   pip install -r requirements.txt
    ```
 
 2. Start the app
@@ -65,15 +65,32 @@
     ```typescript
     this.baseUrl = 'https://xxxxxx.ngrok-free.app'; // replace with your ngrok URL
     ```
+8. command + p to open a python interpreter and make an environment
 
-8. start the expo app with tunnel option
+    ```bash
+    cd backend
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    pip install -r requirements.txt
+    ```
+    use `deactivate` command to exit the virtual environment
+
+9. OVERVIEW: start the expo app with tunnel option
+    ### nrgrok command
+    ```bash
+    ngrok http 3000
+    ```
+    this.baseUrl = 'https://xxxxxx.ngrok-free.app'; // replace with your ngrok URL in geminiService.ts in the frontend folder
+    ```
+
     ### first start the backend server
     ```bash
-     cd backend
-    npm run start
+    cd backend
+    uvicorn app.main:app --host 0.0.0.0 --port 3000 --reload
     ```
     ### then start the expo app with tunnel option
     ```bash
+    cd frontend
     npx expo start --tunnel
     ```
 
