@@ -1,5 +1,5 @@
 from fastapi import APIRouter, File, UploadFile
-from services.gem_service import parse_receipt, analyze_image
+from ..services.gem_service import parse_receipt, analyze_image
 
 router = APIRouter()
 
