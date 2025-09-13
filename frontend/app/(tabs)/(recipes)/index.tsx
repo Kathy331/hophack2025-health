@@ -72,7 +72,7 @@ export default function RecipesScreen() {
 
     try {
       // Call your Python FastAPI backend
-      const response = await fetch(`${backendUrl}/api/generate-recipe`, {
+  const response = await fetch(`${backendUrl}/gem/generate-recipe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

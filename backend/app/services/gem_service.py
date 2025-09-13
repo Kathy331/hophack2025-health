@@ -1,3 +1,35 @@
+# Generate recipe from video URL (mock for now)
+def generate_recipe(video_url: str, platform: str) -> dict:
+    # TODO: Implement transcript extraction and Gemini call
+    # For now, return a mock recipe
+    return {
+        "title": "Chocolate Chip Cookies",
+        "ingredients": [
+            "2¼ cups all-purpose flour",
+            "1 cup butter, softened",
+            "¾ cup granulated sugar",
+            "¾ cup brown sugar",
+            "2 large eggs",
+            "2 tsp vanilla extract",
+            "1 tsp baking soda",
+            "1 tsp salt",
+            "2 cups chocolate chips"
+        ],
+        "steps": [
+            "Preheat oven to 375°F (190°C)",
+            "Mix butter and sugars until creamy",
+            "Beat in eggs and vanilla",
+            "Combine flour, baking soda, and salt in separate bowl",
+            "Gradually add dry ingredients to wet mixture",
+            "Stir in chocolate chips",
+            "Drop rounded tablespoons onto ungreased baking sheets",
+            "Bake 9-11 minutes until golden brown",
+            "Cool on baking sheet for 2 minutes, then transfer to wire rack"
+        ],
+        "cookTime": "25 minutes",
+        "servings": 24,
+        "difficulty": "Easy"
+    }
 import os
 import io
 import json
