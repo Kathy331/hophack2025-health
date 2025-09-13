@@ -10,11 +10,12 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
 import { supabase } from '../../../supabaseClient';
 
-const backendUrl = "https://f7406815deb6.ngrok-free.app";
+const backendUrl = "https://acf6653506e9.ngrok-free.app";
 
 interface Recipe {
   id?: number;  // recipe_id from database
@@ -78,16 +79,22 @@ export default function AddRecipeScreen() {
     }
     try {
       if (!isBookmarked) {
-        await saveRecipeToSupabase(recipe, user.id);
-        setIsBookmarked(true);
-        setStatusMessage("Recipe saved!");
+        const result = await saveRecipeToSupabase(recipe, user.id);
+        if (result.success) {
+          setIsBookmarked(true);
+          setStatusMessage("Recipe saved!");
+        }
       } else {
-        await deleteRecipeFromSupabase(recipe, user.id);
-        setIsBookmarked(false);
-        setStatusMessage("Recipe removed from saved!");
+        const result = await deleteRecipeFromSupabase(recipe, user.id);
+        if (result.success) {
+          setIsBookmarked(false);
+          setStatusMessage("Recipe removed from saved!");
+        }
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to update bookmark.");
+      if (!error.message?.includes('success')) {  // Only show error if it's not a success message
+        Alert.alert("Error", error.message || "Failed to update bookmark.");
+      }
     }
   };
 

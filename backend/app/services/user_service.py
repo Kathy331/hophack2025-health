@@ -26,10 +26,57 @@ async def create_profile_in_db(user_id: str, username: str, avatar: Optional[str
         return {"error": str(e)}
     
 async def save_recipe_in_db(user_id: str, recipe: dict):
+    print("Starting recipe save...")
     try:
-        print("Starting recipe save...")
-        # 1. Insert into recipes table
+        # Handle cook time ranges
         cook_time = recipe.get("cookTime", "0 minutes")
+        if '-' in cook_time:
+            try:
+                times = cook_time.split('-')
+                numbers = []
+                for t in times:
+                    num = int(''.join(filter(str.isdigit, t.strip())))
+                    numbers.append(num)
+                avg_minutes = sum(numbers) // len(numbers)
+                cook_time = f"{avg_minutes} minutes"
+            except Exception as e:
+                print(f"Error parsing cook time range: {e}")
+                cook_time = "30 minutes"
+
+        # 1. Insert main recipe
+        recipe_insert = {
+            "user_uuid": user_id,
+            "title": recipe.get("title", "Untitled"),
+            "cook_time": cook_time,
+            "difficulty": recipe.get("difficulty", "Easy"),
+            "servings": recipe.get("servings", 1),
+            "url": recipe.get("url", None)
+        }
+        print("Inserting recipe:", recipe_insert)
+        recipe_resp = supabase.table("recipes").insert(recipe_insert).execute()
+        recipe_id = recipe_resp.data[0]["id"]
+        print("Recipe saved with ID:", recipe_id)
+
+        # 2. Insert ingredients
+        ingredients = recipe.get("ingredients", [])
+        if ingredients:
+            print(f"Inserting {len(ingredients)} ingredients")
+            ingredient_rows = [{"recipe_id": recipe_id, "ingredient": ing} for ing in ingredients]
+            supabase.table("recipe_ingredients").insert(ingredient_rows).execute()
+            print("Ingredients saved successfully")
+
+        # 3. Insert steps
+        steps = recipe.get("steps", [])
+        if steps:
+            print(f"Inserting {len(steps)} steps")
+            step_rows = [{"recipe_id": recipe_id, "step_number": i+1, "instruction": step} for i, step in enumerate(steps)]
+            supabase.table("recipe_steps").insert(step_rows).execute()
+            print("Steps saved successfully")
+
+        return {"success": True, "recipe_id": recipe_id}
+    except Exception as e:
+        print("Error saving recipe:", str(e))
+        return {"success": False, "error": str(e)}
         # Handle time ranges by taking the average
         if '-' in cook_time:
             try:
