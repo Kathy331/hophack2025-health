@@ -65,7 +65,7 @@
     ```typescript
     this.baseUrl = 'https://xxxxxx.ngrok-free.app'; // replace with your ngrok URL
     ```
-8. command + p to open a python interpreter and make an environment
+8. OVERVIEW part 1: command + p to open a python interpreter and make an environment
 
     ```bash
     cd backend
@@ -75,7 +75,7 @@
     ```
     use `deactivate` command to exit the virtual environment
 
-9. OVERVIEW: start the expo app with tunnel option
+9. OVERVIEW part 2: start the expo app with tunnel option
     ### nrgrok command
     ```bash
     ngrok http 3000
