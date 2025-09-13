@@ -20,9 +20,9 @@ def parse_receipt(image_bytes: bytes) -> dict:
     model = genai.GenerativeModel("gemini-2.5-flash")
 
     prompt = (
-        "Extract food items and their estimated shelf life in days. "
+        "1. Extract food items and their estimated shelf life in days. 2. Extract the date the items were bought and use this to estimate the shelf life 3. Extract the price of the items"
         "Return JSON strictly in this format:\n"
-        "{ 'items': [ { 'name': str, 'shelf_life_days': int } ] }"
+        "{ 'items': [ { 'name': str, 'shelf_life_days': int , 'date_bought': YYYY-MM-DD, 'price': number} ] }"
     )
 
     # Generate content
@@ -47,7 +47,7 @@ def analyze_image(image_bytes: bytes) -> dict:
 
 
 
-
+#fixes critical error where front end returns empty json bc there were spaces in the gemini response. Deletes any whitespace
 def safe_parse_gemini_response(response_text: str) -> dict:
     """
     Extracts JSON object from Gemini response text safely.
