@@ -37,7 +37,7 @@ export default function Signup() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#eaf8ea" />
-      <Text style={styles.title}>🌱 Sign Up</Text>
+      <Text style={styles.title}>🌱 Sign Up For Gobble</Text>
 
       <TextInput
         placeholder="Email"
