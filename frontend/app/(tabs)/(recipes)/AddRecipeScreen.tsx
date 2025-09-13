@@ -365,17 +365,17 @@ export default function AddRecipeScreen() {
             <Text style={styles.metric}>📊 {recipe.difficulty}</Text>
           </View>
 
-          <Text style={styles.sectionTitle}>Ingredients</Text>
-          {recipe.ingredients.length > 0 ? (
-            recipe.ingredients.map((ingredient, idx) => (
-              <Text key={idx} style={styles.ingredient}>• {ingredient}</Text>
-            ))
-          ) : (
-            <Text style={styles.ingredient}>No ingredients found.</Text>
-          )}
+        <Text style={styles.sectionTitle}>Ingredients</Text>
+            {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 ? (
+              recipe.ingredients.map((ingredient, idx) => (
+                <Text key={idx} style={styles.ingredient}>• {ingredient}</Text>
+              ))
+            ) : (
+              <Text style={styles.ingredient}>No ingredients found.</Text>
+            )}
 
           <Text style={styles.sectionTitle}>Steps</Text>
-          {recipe.steps.length > 0 ? (
+          {Array.isArray(recipe.steps) && recipe.steps.length > 0 ? (
             recipe.steps.map((step, idx) => (
               <View key={idx} style={styles.step}>
                 <Text style={styles.stepNumber}>{idx + 1}</Text>
