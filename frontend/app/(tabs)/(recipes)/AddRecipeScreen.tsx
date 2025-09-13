@@ -14,15 +14,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
 import { supabase } from '../../../supabaseClient';
 
-const backendUrl = "https://1b2faa1abd69.ngrok-free.app";
+const backendUrl = "https://cb8c567821c0.ngrok-free.app";
 
 interface Recipe {
+  id?: number;  // recipe_id from database
   title: string;
   ingredients: string[];
   steps: string[];
   cookTime: string;
   servings: number;
   difficulty: string;
+  url?: string;  // URL of the video source
 }
 
 interface ApiResponse {
