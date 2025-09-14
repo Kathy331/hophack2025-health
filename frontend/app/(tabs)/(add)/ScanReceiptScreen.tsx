@@ -10,7 +10,8 @@ import {
   Modal,
   Alert,
   TextInput,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
@@ -29,6 +30,7 @@ export default function ScanReceiptScreen() {
   const [scannedReceipts, setScannedReceipts] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [parsedItems, setParsedItems] = useState<ParsedItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -60,6 +62,7 @@ export default function ScanReceiptScreen() {
     if (!hasPermission) return;
 
     try {
+      setLoading(true);
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [3, 4],
@@ -71,6 +74,8 @@ export default function ScanReceiptScreen() {
       }
     } catch {
       Alert.alert('Error', 'Failed to scan receipt');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,6 +84,7 @@ export default function ScanReceiptScreen() {
     if (!hasPermission) return;
 
     try {
+      setLoading(true);
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -92,6 +98,8 @@ export default function ScanReceiptScreen() {
       }
     } catch {
       Alert.alert('Error', 'Failed to select receipt');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,6 +130,7 @@ export default function ScanReceiptScreen() {
     }
 
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.getUser();
       if (error || !data.user) {
         setParsedItems([]);
@@ -157,6 +166,8 @@ export default function ScanReceiptScreen() {
       console.error('Error processing receipts:', error);
       setParsedItems([]);
       setModalVisible(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,6 +203,9 @@ export default function ScanReceiptScreen() {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
+      setModalVisible(false); // Close the modal when loading starts
+
       const { data, error } = await supabase.auth.getUser();
       if (error || !data.user) throw new Error("User not found");
   
@@ -210,160 +224,169 @@ export default function ScanReceiptScreen() {
       
       await finalizeItems(payload);
       Alert.alert("Success", "Items submitted successfully!");
-      setModalVisible(false);
       setParsedItems([]);
       setScannedReceipts([]);
     } catch (err) {
       console.error(err);
       Alert.alert("Error", "Failed to submit items");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.title}>🧾 Scan Receipts</Text>
-      <Text style={styles.subtitle}>Capture or select receipts to extract data</Text>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <Text style={styles.title}>🧾 Scan Receipts</Text>
+        <Text style={styles.subtitle}>Capture or select receipts to extract data</Text>
 
-      <TouchableOpacity style={styles.scanButton} onPress={showReceiptOptions}>
-        <Text style={styles.scanButtonText}>+ Add Receipt</Text>
-      </TouchableOpacity>
-
-      {scannedReceipts.length > 0 && (
-        <View style={styles.receiptsContainer}>
-          <Text style={styles.sectionTitle}>Scanned ({scannedReceipts.length})</Text>
-          <View style={styles.receiptsGrid}>
-            {scannedReceipts.map((uri, index) => (
-              <View key={index} style={styles.receiptWrapper}>
-                <Image source={{ uri }} style={styles.receiptImage} />
-                <TouchableOpacity style={styles.removeButton} onPress={() => removeReceipt(index)}>
-                  <Text style={styles.removeButtonText}>×</Text>
-                </TouchableOpacity>
-                <View style={styles.receiptOverlay}>
-                  <Text style={styles.receiptNumber}>#{index + 1}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
-
-      {scannedReceipts.length > 0 && (
-        <TouchableOpacity style={styles.processButton} onPress={processReceipts}>
-          <Text style={styles.processButtonText}>
-            Process {scannedReceipts.length} Receipt{scannedReceipts.length > 1 ? 's' : ''}
-          </Text>
+        <TouchableOpacity style={styles.scanButton} onPress={showReceiptOptions}>
+          <Text style={styles.scanButtonText}>+ Add Receipt</Text>
         </TouchableOpacity>
-      )}
 
-      <View style={styles.tipContainer}>
-        <Text style={styles.tipTitle}>💡 Tips for Better Scanning</Text>
-        <Text style={styles.tipText}>• Ensure good lighting</Text>
-        <Text style={styles.tipText}>• Keep receipt flat and straight</Text>
-        <Text style={styles.tipText}>• Include all text in the frame</Text>
-        <Text style={styles.tipText}>• Avoid shadows and glare</Text>
-      </View>
-
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            {!editMode ? (
-              <>
-                <Text style={[styles.modalTitle, { marginTop: 0 }]}>🧾 Items Found</Text>
-                <ScrollView style={{ maxHeight: '65%' }}>
-                  {parsedItems.length > 0 ? (
-                    parsedItems.map((item, index) => (
-                      <TouchableOpacity key={index} style={styles.itemRow} onPress={() => startEditItem(index)}>
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.itemName}>{item.name}</Text>
-                          <Text style={styles.expirationText}>
-                            Est. Exp: {item.estimated_expiration || 'Unknown'}
-                          </Text>
-                        </View>
-                        <View style={styles.storageOptions}>
-                          {(['F','R','S'] as const).map(option => {
-                            const isSelected = item.storage_option === option;
-                            return (
-                              <TouchableOpacity
-                                key={option}
-                                style={[
-                                  styles.storageButton,
-                                  isSelected && styles.storageButtonSelected
-                                ]}
-                                onPress={() => selectStorageOption(index, option)}
-                              >
-                                <Text style={[styles.storageButtonText, isSelected && styles.storageButtonSelectedText]}>
-                                  {option}
-                                </Text>
-                              </TouchableOpacity>
-                            );
-                          })}
-                        </View>
-                      </TouchableOpacity>
-                    ))
-                  ) : (
-                    <Text style={styles.modalText}>No items found.</Text>
-                  )}
-                </ScrollView>
-
-                <TouchableOpacity 
-                  style={[styles.submitButton, { marginTop: 10 }]}
-                  onPress={handleSubmit}
-                >
-                  <Text style={styles.closeButtonText}>Submit</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={[styles.closeButton, { marginTop: 10 }]} onPress={() => setModalVisible(false)}>
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <Text style={styles.modalTitle}>Edit Item</Text>
-                <TextInput
-                  style={styles.inputField}
-                  value={editingName}
-                  onChangeText={setEditingName}
-                  placeholder="Item name"
-                  autoFocus
-                />
-                <TouchableOpacity style={styles.inputField} onPress={() => setShowDatePicker(true)}>
-                  <Text>{editingExpiration || 'Select Estimated Expiration'}</Text>
-                </TouchableOpacity>
-
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={editingExpiration ? new Date(editingExpiration) : new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={onChangeDate}
-                  />
-                )}
-
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                  <TouchableOpacity
-                    style={[styles.closeButton, { flex: 1, marginRight: 5 }]}
-                    onPress={() => setEditMode(false)}
-                  >
-                    <Text style={styles.closeButtonText}>Cancel</Text>
+        {scannedReceipts.length > 0 && (
+          <View style={styles.receiptsContainer}>
+            <Text style={styles.sectionTitle}>Scanned ({scannedReceipts.length})</Text>
+            <View style={styles.receiptsGrid}>
+              {scannedReceipts.map((uri, index) => (
+                <View key={index} style={styles.receiptWrapper}>
+                  <Image source={{ uri }} style={styles.receiptImage} />
+                  <TouchableOpacity style={styles.removeButton} onPress={() => removeReceipt(index)}>
+                    <Text style={styles.removeButtonText}>×</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.submitButton, { flex: 1, marginLeft: 5 }]}
-                    onPress={saveEditedItem}
-                  >
-                    <Text style={styles.closeButtonText}>Save</Text>
-                  </TouchableOpacity>
+                  <View style={styles.receiptOverlay}>
+                    <Text style={styles.receiptNumber}>#{index + 1}</Text>
+                  </View>
                 </View>
-              </>
-            )}
+              ))}
+            </View>
           </View>
+        )}
+
+        {scannedReceipts.length > 0 && (
+          <TouchableOpacity style={styles.processButton} onPress={processReceipts}>
+            <Text style={styles.processButtonText}>
+              Process {scannedReceipts.length} Receipt{scannedReceipts.length > 1 ? 's' : ''}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <View style={styles.tipContainer}>
+          <Text style={styles.tipTitle}>💡 Tips for Better Scanning</Text>
+          <Text style={styles.tipText}>• Ensure good lighting</Text>
+          <Text style={styles.tipText}>• Keep receipt flat and straight</Text>
+          <Text style={styles.tipText}>• Include all text in the frame</Text>
+          <Text style={styles.tipText}>• Avoid shadows and glare</Text>
         </View>
-      </Modal>
-    </ScrollView>
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              {!editMode ? (
+                <>
+                  <Text style={[styles.modalTitle, { marginTop: 0 }]}>🧾 Items Found</Text>
+                  <ScrollView style={{ maxHeight: '65%' }}>
+                    {parsedItems.length > 0 ? (
+                      parsedItems.map((item, index) => (
+                        <TouchableOpacity key={index} style={styles.itemRow} onPress={() => startEditItem(index)}>
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.itemName}>{item.name}</Text>
+                            <Text style={styles.expirationText}>
+                              Est. Exp: {item.estimated_expiration || 'Unknown'}
+                            </Text>
+                          </View>
+                          <View style={styles.storageOptions}>
+                            {(['F','R','S'] as const).map(option => {
+                              const isSelected = item.storage_option === option;
+                              return (
+                                <TouchableOpacity
+                                  key={option}
+                                  style={[
+                                    styles.storageButton,
+                                    isSelected && styles.storageButtonSelected
+                                  ]}
+                                  onPress={() => selectStorageOption(index, option)}
+                                >
+                                  <Text style={[styles.storageButtonText, isSelected && styles.storageButtonSelectedText]}>
+                                    {option}
+                                  </Text>
+                                </TouchableOpacity>
+                              );
+                            })}
+                          </View>
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <Text style={styles.modalText}>No items found.</Text>
+                    )}
+                  </ScrollView>
+
+                  <TouchableOpacity 
+                    style={[styles.submitButton, { marginTop: 10 }]}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={styles.closeButtonText}>Submit</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={[styles.closeButton, { marginTop: 10 }]} onPress={() => setModalVisible(false)}>
+                    <Text style={styles.closeButtonText}>Close</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.modalTitle}>Edit Item</Text>
+                  <TextInput
+                    style={styles.inputField}
+                    value={editingName}
+                    onChangeText={setEditingName}
+                    placeholder="Item name"
+                    autoFocus
+                  />
+                  <TouchableOpacity style={styles.inputField} onPress={() => setShowDatePicker(true)}>
+                    <Text>{editingExpiration || 'Select Estimated Expiration'}</Text>
+                  </TouchableOpacity>
+
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={editingExpiration ? new Date(editingExpiration) : new Date()}
+                      mode="date"
+                      display="default"
+                      onChange={onChangeDate}
+                    />
+                  )}
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                    <TouchableOpacity
+                      style={[styles.closeButton, { flex: 1, marginRight: 5 }]}
+                      onPress={() => setEditMode(false)}
+                    >
+                      <Text style={styles.closeButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.submitButton, { flex: 1, marginLeft: 5 }]}
+                      onPress={saveEditedItem}
+                    >
+                      <Text style={styles.closeButtonText}>Save</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#1db954" />
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -419,4 +442,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: 'center'
   },
+
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2000, // Ensure it is above all other elements, including the modal
+  },
+ 
 });

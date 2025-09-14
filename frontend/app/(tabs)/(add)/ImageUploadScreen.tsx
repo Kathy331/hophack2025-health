@@ -7,7 +7,8 @@ import {
   Image, 
   Alert, 
   ScrollView,
-  Dimensions 
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { analyzeImageWithGemini } from '../../../services/geminiService';
@@ -82,25 +83,11 @@ export default function ImageUploadScreen() {
     setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const uploadPhotos = async () => {
-    if (selectedImages.length === 0) {
-      Alert.alert('No Photos', 'Please select at least one photo.');
-      return;
-    }
-
-    Alert.alert('Process Images', 'What would you like to do with your images?', [
-      { text: 'Analyze with AI', onPress: () => analyzeImagesWithGemini() },
-      { text: 'Just Upload', onPress: () => Alert.alert('Uploaded!', `${selectedImages.length} photo(s) uploaded!`) },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
-
   const analyzeImagesWithGemini = async () => {
     if (selectedImages.length === 0) return;
 
     setLoading(true);
     try {
-      Alert.alert('Processing...', 'Analyzing your images with AI. This may take a moment.');
       for (const image of selectedImages) {
         await analyzeImageWithGemini(image);
       }
@@ -111,47 +98,64 @@ export default function ImageUploadScreen() {
     }
   };
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.title}>🌱 Add Your Photos</Text>
-      <Text style={styles.subtitle}>Take a picture of one or multiple food items to upload</Text>
-      <TouchableOpacity style={styles.addButton} onPress={showImageOptions}>
-        <Text style={styles.addButtonText}>+ Add Photo</Text>
-      </TouchableOpacity>
+  const uploadPhotos = async () => {
+    if (selectedImages.length === 0) {
+      Alert.alert('No Photos', 'Please select at least one photo.');
+      return;
+    }
 
-      {selectedImages.length > 0 && (
-        <View style={styles.imageContainer}>
-          <Text style={styles.sectionTitle}>Selected ({selectedImages.length})</Text>
-          <View style={styles.imageGrid}>
-            {selectedImages.map((uri, index) => (
-              <View key={index} style={styles.imageWrapper}>
-                <Image source={{ uri }} style={styles.image} />
-                <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(index)}>
-                  <Text style={styles.removeButtonText}>×</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+    await analyzeImagesWithGemini();
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <Text style={styles.title}>🌱 Add Your Photos</Text>
+        <Text style={styles.subtitle}>Take a picture of one or multiple food items to upload</Text>
+        <TouchableOpacity style={styles.addButton} onPress={showImageOptions}>
+          <Text style={styles.addButtonText}>+ Add Photo</Text>
+        </TouchableOpacity>
+
+        {selectedImages.length > 0 && (
+          <View style={styles.imageContainer}>
+            <Text style={styles.sectionTitle}>Selected ({selectedImages.length})</Text>
+            <View style={styles.imageGrid}>
+              {selectedImages.map((uri, index) => (
+                <View key={index} style={styles.imageWrapper}>
+                  <Image source={{ uri }} style={styles.image} />
+                  <TouchableOpacity style={styles.removeButton} onPress={() => removeImage(index)}>
+                    <Text style={styles.removeButtonText}>×</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
           </View>
+        )}
+
+        {selectedImages.length > 0 && (
+          <TouchableOpacity style={[styles.uploadButton, loading && { opacity: 0.6 }]} onPress={uploadPhotos} disabled={loading}>
+            <Text style={styles.uploadButtonText}>
+              {loading ? 'Processing...' : `Upload ${selectedImages.length} Photo${selectedImages.length > 1 ? 's' : ''}`}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* === Tips Section === */}
+        <View style={styles.tipContainer}>
+          <Text style={styles.tipTitle}>💡 Tips for Better Photos</Text>
+          <Text style={styles.tipText}>• Ensure good lighting for clearer results</Text>
+          <Text style={styles.tipText}>• Avoid blurry or shaky images</Text>
+          <Text style={styles.tipText}>• Center the subject(s) in the frame</Text>
+          <Text style={styles.tipText}>• Keep background minimal to avoid distractions</Text>
+        </View>
+      </ScrollView>
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#1db954" />
         </View>
       )}
-
-      {selectedImages.length > 0 && (
-        <TouchableOpacity style={[styles.uploadButton, loading && { opacity: 0.6 }]} onPress={uploadPhotos} disabled={loading}>
-          <Text style={styles.uploadButtonText}>
-            {loading ? 'Processing...' : `Upload ${selectedImages.length} Photo${selectedImages.length > 1 ? 's' : ''}`}
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      {/* === Tips Section === */}
-      <View style={styles.tipContainer}>
-        <Text style={styles.tipTitle}>💡 Tips for Better Photos</Text>
-        <Text style={styles.tipText}>• Ensure good lighting for clearer results</Text>
-        <Text style={styles.tipText}>• Avoid blurry or shaky images</Text>
-        <Text style={styles.tipText}>• Center the subject(s) in the frame</Text>
-        <Text style={styles.tipText}>• Keep background minimal to avoid distractions</Text>
-      </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -282,5 +286,16 @@ const styles = StyleSheet.create({
     color: '#4d784e',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000, // Ensure it is above all other elements
   },
 });

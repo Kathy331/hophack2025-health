@@ -18,8 +18,6 @@ app.add_middleware(
 )
 
 # Import all routes
-from app.routes import gem_route, user_route, items_route
-
 # Include routers
 app.include_router(gem_route.router, prefix="/gem", tags=["gem"])
 app.include_router(user_route.router, prefix="/user", tags=["user"])
