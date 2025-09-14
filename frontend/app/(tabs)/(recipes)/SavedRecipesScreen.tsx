@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import SearchBar from '../../../components/SearchBar';
-import RecipeCard from './RecipeCard';
 import { fetchUserRecipes, Recipe, saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/recipeService';
 
 function SavedRecipesScreen({ userId }: { userId: string }) {
@@ -74,7 +73,9 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
       ) : (
         <View style={styles.list}>
           {filteredRecipes.map((item) => (
-            <RecipeCard key={item.id} item={item} userId={userId} onDelete={handleDelete} />
+            <View key={item.id} style={styles.recipeItem}>
+              <Text style={styles.recipeTitle}>{item.title}</Text>
+            </View>
           ))}
         </View>
       )}
@@ -106,6 +107,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#dc2626',
     textAlign: 'center',
+  },
+  recipeItem: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  recipeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
 
