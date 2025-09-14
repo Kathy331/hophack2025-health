@@ -106,6 +106,13 @@ export default function Index() {
     rows.push(sortedItems.slice(i, i + numColumns));
   }
 
+  // Map viewMode letters to full names
+  const modeNames: Record<"S" | "R" | "F", string> = {
+    S: "Shelf",
+    R: "Refrigerate",
+    F: "Freeze",
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#EAF8E6" />
@@ -121,7 +128,7 @@ export default function Index() {
             ]}
             onPress={() => setViewMode(mode)}
           >
-            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            {modeNames[mode]}
           </Text>
         ))}
       </View>
@@ -140,29 +147,30 @@ export default function Index() {
           <ActivityIndicator size="large" color="#2C6E49" />
         ) : (
           <FlatList
-            data={rows}
-            keyExtractor={(_, index) => `row-${index}`}
-            renderItem={({ item: rowItems }) => (
-              <View style={styles.shelfRow}>
-                {rowItems.map((item) => (
-                  <ItemCard
-                    key={item.id}
-                    name={item.name}
-                    exp_date={item.estimated_expiration || null}
-                    uri="https://placekitten.com/200/200"
+              data={rows}
+              keyExtractor={(_, index) => `row-${index}`}
+              renderItem={({ item: rowItems }) => (
+                <View style={styles.shelfRow}>
+                  {rowItems.map((item) => (
+                    <ItemCard
+                      key={item.id}
+                      name={item.name}
+                      exp_date={item.estimated_expiration || null}
+                      uri="https://placekitten.com/200/200"
+                    />
+                  ))}
+                  <View
+                    style={[
+                      styles.shelfLine,
+                      viewMode === "R" && { backgroundColor: "#e4fdf4ff" },
+                      viewMode === "F" && { backgroundColor: "#e4fdf4ff" },
+                    ]}
                   />
-                ))}
-                <View
-                  style={[
-                    styles.shelfLine,
-                    viewMode === "R" && { backgroundColor: "#e4fdf4ff" },
-                    viewMode === "F" && { backgroundColor: "#e4fdf4ff" },
-                  ]}
-                />
-              </View>
-            )}
-            contentContainerStyle={styles.listContent}
-          />
+                </View>
+              )}
+              contentContainerStyle={[styles.listContent, { paddingBottom: 120 }]} // 👈 increase padding
+            />
+
         )}
       </View>
     </View>
@@ -178,7 +186,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "#2C6E49", // 🌿 green title
     paddingHorizontal: 16,
     paddingBottom: 12,
     textAlign: "center",
@@ -199,32 +207,36 @@ const styles = StyleSheet.create({
   card: {
     width: imageSize,
     marginHorizontal: cardMargin / 2,
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: "hidden",
     shadowColor: "#000",
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
     elevation: 6,
+    paddingBottom: 6,
+    justifyContent: "space-between",
   },
   image: {
     width: "100%",
     height: imageSize,
     resizeMode: "cover",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   cardText: {
     textAlign: "center",
     fontSize: 14,
+    fontWeight: "700",
     color: "#FFFFFF",
-    fontWeight: "600",
-    paddingVertical: 4,
+    paddingVertical: 6,
   },
   expiryText: {
     textAlign: "center",
-    fontSize: 10,
-    color: "#FFFFFF",
+    fontSize: 11,
     fontStyle: "italic",
-    marginBottom: 4,
+    color: "#FFFFFF",
+    marginBottom: 6,
   },
   shelfLine: {
     position: "absolute",
