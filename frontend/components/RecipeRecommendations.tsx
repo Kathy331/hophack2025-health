@@ -1,42 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-interface Recipe {
-  title: string;
-  cook_time: string;
-  difficulty: string;
-  ingredients: string[];
-  steps: string[];
-  metadata?: {
-    used_ingredients?: string[];
-    used_expiring?: string[];
-    stats?: {
-      ingredient_usage?: string;
-      expiring_usage?: string;
-      efficiency_score?: number;
-    };
-  };
-}
-
-// Mock data for testing
-const mockRecipes: Recipe[] = [
-  {
-    title: "Apple Cinnamon Muffins",
-    cook_time: "30 mins",
-    difficulty: "easy",
-    ingredients: [
-      "2 cups flour",
-      "2 apples, diced",
-      "1 tsp cinnamon"
-    ],
-    steps: [
-      "1. Preheat oven to 350°F",
-      "2. Mix ingredients",
-      "3. Bake for 25 minutes"
-    ]
-  }
-];
+import { getRecipeRecommendations } from '../../../services/recommendationsService';
+import { Recipe } from '../../../types';
 
 export default function RecipeRecommendations() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -44,10 +10,21 @@ export default function RecipeRecommendations() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // For now, use mock data
-    setRecipes(mockRecipes);
-    setLoading(false);
+    loadRecipes();
   }, []);
+
+  const loadRecipes = async () => {
+    try {
+      setLoading(true);
+      const response = await getRecipeRecommendations();
+      setRecipes(response);
+    } catch (err) {
+      setError('Failed to load recipes');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -61,7 +38,7 @@ export default function RecipeRecommendations() {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity onPress={() => setLoading(true)} style={styles.retryButton}>
+        <TouchableOpacity onPress={loadRecipes} style={styles.retryButton}>
           <Text style={styles.retryText}>Retry</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -77,12 +54,10 @@ export default function RecipeRecommendations() {
             <Text style={styles.recipeTitle}>{recipe.title}</Text>
             <Text style={styles.recipeDetail}>Time: {recipe.cook_time}</Text>
             <Text style={styles.recipeDetail}>Difficulty: {recipe.difficulty}</Text>
-            
             <Text style={styles.subHeader}>Ingredients:</Text>
             {recipe.ingredients.map((ing, i) => (
               <Text key={i} style={styles.ingredient}>• {ing}</Text>
             ))}
-            
             <Text style={styles.subHeader}>Steps:</Text>
             {recipe.steps.map((step, i) => (
               <Text key={i} style={styles.step}>{step}</Text>
