@@ -1,5 +1,5 @@
 
-const backendUrl = "https://d3171d9b7207.ngrok-free.app"; // replace with your backend
+const backendUrl = "https://e70dbef2a2a3.ngrok-free.app"; // replace with your backend
 
 export interface Recipe {
   id?: number;  // recipe_id from database
@@ -37,6 +37,7 @@ export const createProfile = async (id: string, username: string, avatar?: strin
 };
 
 export const saveRecipeToSupabase = async (recipe: Recipe, userId: string) => {
+  
   // Ensure recipe has all required fields before saving
   const recipeToSave = {
     ...recipe,
