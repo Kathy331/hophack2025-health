@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Dict, Any, List
-from services.item_service import insert_items_into_supabase
-from services.gem_service import predict_expirations
 from uuid import UUID
+from services.item_service import insert_items_into_supabase, supabase
+from services.gem_service import predict_expirations
 
-
-
-from db import supabase  # your Supabase client
-from schemas.item_schema import ItemSchema 
+class ItemSchema(BaseModel):
+    id: int
+    name: str
+    date_bought: str
+    estimated_expiration: str | None
+    price: float
+    user_uuid: str
 
 router = APIRouter()
 
@@ -19,7 +22,7 @@ class ItemsPayload(BaseModel):
 @router.post("/finalize-items")
 async def finalize_items_endpoint(payload: ItemsPayload):
     """
-    Finalize receipt items:
+    Process receipt items:
     1. Predict missing expiration dates
     2. Insert items into Supabase
     3. Return clean response
@@ -36,6 +39,8 @@ async def finalize_items_endpoint(payload: ItemsPayload):
         "items": result.get("result", []),
         "message": result.get("message", "")
     }
+
+
 
 @router.get("/get-items", response_model=List[ItemSchema])
 async def get_items_endpoint(user_uuid: UUID = Query(...)):

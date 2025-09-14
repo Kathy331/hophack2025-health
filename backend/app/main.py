@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import gem_route, user_route
-import os
+from routes import gem_route, user_route, items_route
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -19,7 +18,7 @@ app.add_middleware(
 )
 
 # Import all routes
-from routes import gem_route, user_route, items_route
+from app.routes import gem_route, user_route, items_route
 
 # Include routers
 app.include_router(gem_route.router, prefix="/gem", tags=["gem"])

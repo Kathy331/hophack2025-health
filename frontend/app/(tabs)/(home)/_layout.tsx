@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Example Dashboard screen (replace with your real one)
+// Example Dashboard screens
 function Dashboard() {
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +24,6 @@ function Dashboard() {
   );
 }
 
-// --- Add new DashboardCosts screen ---
 function DashboardCosts() {
   return (
     <SafeAreaView style={styles.container}>
@@ -36,7 +35,7 @@ function DashboardCosts() {
 }
 
 
-
+// --- Types ---
 type Item = {
   key: string;
   label: string;
@@ -58,7 +57,7 @@ const remindersSections: Section[] = [
       {
         key: 'banana',
         label: 'Banana',
-        expDate: '2024-10-05',
+        expDate: 'Expires 9/14/2025',
         containerStyle: { backgroundColor: '#B4E197' },
         textStyle: { color: '#2C6E49' },
       },
@@ -69,7 +68,7 @@ const remindersSections: Section[] = [
       {
         key: 'apple',
         label: 'Apple',
-        expDate: '2024-10-05',
+        expDate: 'Expires 9/20/2025',
         containerStyle: { backgroundColor: '#A0D995' },
         textStyle: { color: '#2C6E49' },
       },
@@ -80,7 +79,7 @@ const remindersSections: Section[] = [
       {
         key: 'orange',
         label: 'Orange',
-        expDate: '2024-10-05',
+        expDate: 'Expires 9/21/2025',
         containerStyle: { backgroundColor: '#83BD75' },
         textStyle: { color: '#2C6E49' },
       },
@@ -128,18 +127,31 @@ const costs: Section[] = [
   },
 ];
 
-// Merge all into one SectionList
-const sections: Section[] = [
-  ...remindersSections,
-  ...foodWaste,
-  ...costs,
-];
+const sections: Section[] = [...remindersSections, ...foodWaste, ...costs];
 
+// --- Community Layout ---
 function CommunityLayout({ navigation }: { navigation: any }) {
+  const [currentDate, setCurrentDate] = useState('');
+
+  // Update date every minute
+  useEffect(() => {
+    const updateDate = () => {
+      const now = new Date();
+      const formatted = now.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      });
+      setCurrentDate(formatted);
+    };
+    updateDate();
+    const interval = setInterval(updateDate, 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const renderItem = ({ item, section }: { item: Item; section: Section }) => {
-    const isReminderOrUntitled = section.title === 'Reminders' || !section.title;
-    const showArrow = section.title === 'Food Waste' || section.title === 'Costs';
-    const isClickable = section.title === 'Food Waste' || section.title === 'Costs';
+    const isReminderOrUntitled = section.title?.includes('Reminders') || !section.title;
+    const isClickable = section.title?.includes('Food Waste') || section.title?.includes('Costs');
 
     const Content = (
       <View
@@ -173,7 +185,7 @@ function CommunityLayout({ navigation }: { navigation: any }) {
             </Text>
           )}
 
-          {showArrow && (
+          {isClickable && (
             <MaterialIcons
               name="arrow-forward-ios"
               size={20}
@@ -186,22 +198,18 @@ function CommunityLayout({ navigation }: { navigation: any }) {
     );
 
     if (isClickable) {
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        if (section.title === 'Food Waste') {
-          navigation.navigate('Dashboard');
-        } else if (section.title === 'Costs') {
-          navigation.navigate('DashboardCosts');
-        }
-      }}
-      activeOpacity={0.7}
-    >
-      {Content}
-    </TouchableOpacity>
-  );
-}
-
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            if (section.title?.includes('Food Waste')) navigation.navigate('Dashboard');
+            else if (section.title?.includes('Costs')) navigation.navigate('DashboardCosts');
+          }}
+          activeOpacity={0.7}
+        >
+          {Content}
+        </TouchableOpacity>
+      );
+    }
 
     return Content;
   };
@@ -211,6 +219,13 @@ function CommunityLayout({ navigation }: { navigation: any }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Top Header with Current Date */}
+      <View style={styles.topHeader}>
+        <Text style={styles.topHeaderText}>{currentDate}</Text>
+      </View>
+
+      <View style={styles.divider} />
+
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.key}
@@ -251,7 +266,6 @@ export default function App() {
   );
 }
 
-
 // --- Styles ---
 const styles = StyleSheet.create({
   container: {
@@ -276,15 +290,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   header: {
-    paddingTop: 20,
-    padding: 20,
     fontSize: 22,
     fontWeight: 'bold',
     color: '#2C6E49',
     paddingHorizontal: 8,
     paddingVertical: 4,
     backgroundColor: '#EAF8E6',
-    textAlign: "center",
+    textAlign: 'center',
   },
   sectionSeparator: {
     height: 8,
@@ -308,5 +320,20 @@ const styles = StyleSheet.create({
   arrowIcon: {
     marginLeft: 3,
     alignSelf: 'center',
+  },
+  topHeader: {
+    paddingVertical: 10,
+    marginBottom: -2,
+  },
+  topHeaderText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#105b21ff',
+    textAlign: 'center',
+  },
+  divider: {
+    height: 3,
+    backgroundColor: '#91b399ff',
+    marginVertical: 8,
   },
 });
