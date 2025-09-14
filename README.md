@@ -167,7 +167,7 @@ Our app (Gobble) is your one-stop shop for food management. It has a dashboard f
 
 <!-- USAGE -->
 ## Usage
-[demo](https://youtu.be/B0gPpqxy5SE)
+<!--[demo](https://youtu.be/B0gPpqxy5SE)-->
 Once the app is running, you can:
 <!-- Home Page-->
 - **Sign up / Log in**: Create a new account or log in with your existing credentials
