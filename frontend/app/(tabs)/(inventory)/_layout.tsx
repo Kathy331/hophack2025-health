@@ -146,11 +146,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#2C6E49',
-    paddingTop: 10,
     paddingHorizontal: 16,
     paddingBottom: 12,
     textAlign: 'center',
     fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'sans-serif-medium',
+    paddingTop: 40,
   },
   listContent: {
     paddingBottom: 20,
