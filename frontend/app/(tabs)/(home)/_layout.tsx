@@ -1,5 +1,5 @@
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,11 +10,13 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { Stack as ExpoStack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Example Dashboard screens
+import RecipeRecommendations from '../(recipes)/RecipeRecommendations';
+
 function Dashboard() {
   return (
     <SafeAreaView style={[styles.container, styles.dashboardContainer]}>
@@ -55,6 +57,28 @@ type Section = {
 };
 
 // --- Sections Data ---
+const recommendations: Section[] = [
+  {
+    title: '🌱 Inventory Recommendations',
+    data: [
+      {
+        key: 'recommendations',
+        label: 'Why not bake a batch of apple muffins with your apples before they go bad this week? 📝', 
+        containerStyle: {
+          backgroundColor: '#EAF8E6',
+          paddingTop: 24,
+          paddingHorizontal: 20,
+          paddingBottom: 40,
+          marginBottom: 30,
+          minHeight: 120,
+          borderRadius: 20,
+        },
+        textStyle: { color: '#2C6E49' },
+      },
+    ],
+  },
+];
+
 const remindersSections: Section[] = [
   {
     title: '🌱 Reminders',
@@ -131,8 +155,9 @@ const costs: Section[] = [
     ],
   },
 ];
+// Sections combined
 
-const sections: Section[] = [...remindersSections, ...foodWaste, ...costs];
+const sections: Section[] = [...remindersSections, ...foodWaste, ...costs, ...recommendations];
 
 // --- Community Layout ---
 function CommunityLayout({ navigation }: { navigation: any }) {
@@ -156,7 +181,7 @@ function CommunityLayout({ navigation }: { navigation: any }) {
 
   const renderItem = ({ item, section }: { item: Item; section: Section }) => {
     const isReminderOrUntitled = section.title?.includes('Reminders') || !section.title;
-    const isClickable = section.title?.includes('Food Waste') || section.title?.includes('Costs');
+    const isClickable = section.title?.includes('Food Waste') || section.title?.includes('Costs') || section.title?.includes('Inventory Recommendations');
 
     const Content = (
       <View
@@ -208,6 +233,7 @@ function CommunityLayout({ navigation }: { navigation: any }) {
           onPress={() => {
             if (section.title?.includes('Food Waste')) navigation.navigate('Dashboard');
             else if (section.title?.includes('Costs')) navigation.navigate('DashboardCosts');
+            else if (section.title?.includes('Inventory Recommendations')) navigation.navigate('Recommendations');
           }}
           activeOpacity={0.7}
         >
@@ -265,18 +291,48 @@ export default function App() {
       <Stack.Screen
         name="DashboardCosts"
         component={DashboardCosts}
-        options={{ headerShown: false }} // Hide the header for DashboardCosts
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Recommendations"
+        component={RecipeRecommendations}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
 }
 
-// --- Styles ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EAF8E6',
     paddingHorizontal: 10,
+  },
+  dashboardContainer: {
+    alignItems: 'center',
+    backgroundColor: '#EAF8E6',
+    padding: 20,
+  },
+  dashboardTitle: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 5,
+    color: '#2C6E49',
+  },
+  dashboardImageLarge: {
+    width: '95%',
+    height: 350,
+    resizeMode: 'contain',
+    borderColor: '#A0D995',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5,
+    alignSelf: 'center',
+    marginTop: 10,
+    borderRadius: 30,
   },
   item: {
     paddingVertical: 12,
@@ -341,34 +397,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#91b399ff',
     marginVertical: 8,
   },
-  // Dashboard specific styles
-  dashboardContainer: {
-    alignItems: 'center',
-    backgroundColor: '#EAF8E6', // Light green background for sustainability theme
-    padding: 20,
-  },
-  dashboardTitle: {
-  fontSize: 35,
-  fontWeight: 'bold',
-    // less space below title
-  textAlign: 'center',
-  marginTop: 5,      // very close to the top
-  color: "green",
-},
-
-dashboardImageLarge: {
-  width: '95%',
-  height: 350,       // slightly smaller to fit near top
-  resizeMode: 'contain',
-  borderColor: '#A0D995',
-  shadowColor: '#000',
-  shadowOpacity: 0.2,
-  shadowOffset: { width: 0, height: 2 },
-  shadowRadius: 4,
-  elevation: 5,
-  alignSelf: 'center',
-  marginTop: 10,      // small space between title & image
-  borderRadius: 30,
-},
-
 });
