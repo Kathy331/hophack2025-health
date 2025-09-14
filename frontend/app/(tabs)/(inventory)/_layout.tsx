@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     marginHorizontal: cardMargin / 2,
     borderRadius: 18,
     overflow: 'hidden',
-    backgroundColor: '#D0F0C0',
+    backgroundColor: '#314d23ff',
 
     shadowColor: '#000',
     shadowOpacity: 0.15,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2C6E49',
     fontWeight: '600',
-    paddingVertical: 8,
+    paddingVertical: 3,
   },
   shelfLine: {
     position: 'absolute',

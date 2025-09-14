@@ -1,5 +1,5 @@
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -52,14 +52,14 @@ type Section = {
 // --- Sections Data ---
 const remindersSections: Section[] = [
   {
-    title: 'Reminders',
+    title: 'Reminders ⚠️',
     data: [
       {
         key: 'banana',
         label: 'Banana',
-        expDate: '2024-10-05',
-        containerStyle: { backgroundColor: '#B4E197' },
-        textStyle: { color: '#2C6E49' },
+        expDate: 'Expires 9/14/2025',
+        containerStyle: { backgroundColor: '#961313ff' },
+        textStyle: { color: '#d8dad9ff' },
       },
     ],
   },
@@ -68,7 +68,7 @@ const remindersSections: Section[] = [
       {
         key: 'apple',
         label: 'Apple',
-        expDate: '2024-10-05',
+        expDate: 'Expires 9/20/2025',
         containerStyle: { backgroundColor: '#A0D995' },
         textStyle: { color: '#2C6E49' },
       },
@@ -79,7 +79,7 @@ const remindersSections: Section[] = [
       {
         key: 'orange',
         label: 'Orange',
-        expDate: '2024-10-05',
+        expDate: 'Expires 9/21/2025',
         containerStyle: { backgroundColor: '#83BD75' },
         textStyle: { color: '#2C6E49' },
       },
@@ -93,13 +93,15 @@ const foodWaste: Section[] = [
     data: [
       {
         key: 'apple-fw',
-        label: 'You saved 5 apples from food waste this week! 🍏',
+        label: 'You saved 5 apples from food waste this week!',
         containerStyle: {
-          backgroundColor: '#EAF8E6',
+          backgroundColor: '#f0f8edff',
           paddingVertical: 24,
           paddingHorizontal: 20,
           minHeight: 100,
           borderRadius: 20,
+            shadowColor: '#0b290bff',
+          shadowRadius: 10,
         },
         textStyle: { color: '#2C6E49' },
       },
@@ -113,13 +115,15 @@ const costs: Section[] = [
     data: [
       {
         key: 'apple-cost',
-        label: 'You saved $10.00 on apples this week! 💰',
+        label: 'You saved $10.00 on apples this week!',
         containerStyle: {
-          backgroundColor: '#EAF8E6',
+          backgroundColor:'#f6f8f5ff',
           paddingVertical: 24,
           paddingHorizontal: 20,
           minHeight: 100,
           borderRadius: 20,
+          shadowColor: '#0b290bff',
+          shadowRadius: 10,
         },
         textStyle: { color: '#2C6E49' },
       },
@@ -134,11 +138,31 @@ const sections: Section[] = [
   ...costs,
 ];
 
+
+
 function CommunityLayout({ navigation }: { navigation: any }) {
+  const [currentDate, setCurrentDate] = useState('');
   const renderItem = ({ item, section }: { item: Item; section: Section }) => {
     const isReminderOrUntitled = section.title === 'Reminders' || !section.title;
     const showArrow = section.title === 'Food Waste' || section.title === 'Costs';
     const isClickable = section.title === 'Food Waste' || section.title === 'Costs';
+  
+
+    useEffect(() => {
+    const updateDate = () => {
+      const now = new Date();
+      const formatted = now.toLocaleDateString('en-US', {
+        month: 'long',   // e.g. September
+        day: 'numeric',  // e.g. 13
+        year: 'numeric', // e.g. 2025
+      });
+      setCurrentDate(formatted);
+    };
+
+    updateDate(); // set immediately
+    const interval = setInterval(updateDate, 60 * 1000); // update every 1 min
+    return () => clearInterval(interval); // cleanup
+  }, []);
 
     const Content = (
       <View
@@ -210,6 +234,13 @@ function CommunityLayout({ navigation }: { navigation: any }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* --- Added Custom Header --- */}
+      <View style={styles.topHeader}>
+    <Text style={styles.topHeaderText}>{currentDate}</Text>
+      </View>
+
+      <View style={styles.divider}/>
+
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.key}
@@ -277,7 +308,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#2C6E49',
+    color: '#1a4c26ff',
     paddingHorizontal: 8,
     paddingVertical: 4,
     backgroundColor: '#EAF8E6',
@@ -305,4 +336,22 @@ const styles = StyleSheet.create({
     marginLeft: 3,
     alignSelf: 'center',
   },
+  topHeader: {
+  paddingVertical: 10,
+  marginBottom: -2,
+  
+},
+topHeaderText: {
+  fontSize: 30,
+  fontWeight: 'bold',
+  color: '#105b21ff',
+  alignContent: 'center',
+},
+divider: {
+  height: 3,
+  backgroundColor: '#91b399ff', // light gray line
+  marginVertical: 8,
+},
+
+
 });

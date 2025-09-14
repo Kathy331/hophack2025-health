@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileSettingsUI() {
   return (
@@ -15,7 +16,10 @@ export default function ProfileSettingsUI() {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.title}>🌱 Profile Settings</Text>
+      <SafeAreaView>
+         <Text style={styles.title}>Profile Settings</Text>
+      </SafeAreaView>
+     
 
       <Text style={styles.label}>Username</Text>
       <TextInput
@@ -33,27 +37,17 @@ export default function ProfileSettingsUI() {
         value="john@example.com"
       />
 
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="••••••••"
-        secureTextEntry={true}
-        editable={false}
-        value="password"
-      />
-
       <View style={styles.switchContainer}>
         <Text style={styles.switchLabel}>Enable Notifications</Text>
         <Switch value={true} disabled={true} trackColor={{ true: '#83BD75' }} />
       </View>
 
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Private Account</Text>
-        <Switch value={false} disabled={true} trackColor={{ false: '#ccc' }} />
-      </View>
-
       <TouchableOpacity style={styles.saveButton} disabled={true}>
         <Text style={styles.saveButtonText}>Save Changes</Text>
+      </TouchableOpacity>
+
+        <TouchableOpacity style={styles.saveButton} disabled={true}>
+        <Text style={styles.saveButtonText}>Log Out</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -100,13 +94,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 12,
-    borderColor: '#C5E1A5',
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 3,
     elevation: 1,
