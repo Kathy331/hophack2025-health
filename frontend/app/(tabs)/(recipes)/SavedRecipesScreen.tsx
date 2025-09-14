@@ -23,6 +23,10 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
 
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [cookingMode, setCookingMode] = useState(false);
+
+  const [completedIngredients, setCompletedIngredients] = useState<boolean[]>([]);
+  const [completedSteps, setCompletedSteps] = useState<boolean[]>([]);
 
   const loadRecipes = useCallback(async () => {
     try {
@@ -42,23 +46,6 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
 
   const filteredRecipes = recipes.filter(recipe =>
     recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const renderRecipeCard = ({ item }: { item: Recipe }) => (
-    <TouchableOpacity 
-      style={styles.card} 
-      onPress={() => {
-        setSelectedRecipe(item);
-        setModalVisible(true);
-      }}
-    >
-      <Text style={styles.cardTitle}>{item.title}</Text>
-      <View style={styles.metricRow}>
-        <Text style={styles.metric}>⏱️ {item.cook_time}</Text>
-        <Text style={styles.metric}>🍽️ {item.servings} servings</Text>
-        <Text style={styles.metric}>📊 {item.difficulty}</Text>
-      </View>
-    </TouchableOpacity>
   );
 
   const handleShare = async () => {
@@ -89,6 +76,43 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
     if (selectedRecipe?.url) {
       Linking.openURL(selectedRecipe.url).catch(err => console.error('Failed to open URL:', err));
     }
+  };
+
+  const renderRecipeCard = ({ item }: { item: Recipe }) => (
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={() => {
+        setSelectedRecipe(item);
+        setModalVisible(true);
+        setCookingMode(false);
+      }}
+    >
+      <Text style={styles.cardTitle}>{item.title}</Text>
+      <View style={styles.metricRow}>
+        <Text style={styles.metric}>⏱️ {item.cook_time}</Text>
+        <Text style={styles.metric}>🍽️ {item.servings} servings</Text>
+        <Text style={styles.metric}>📊 {item.difficulty}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const activateCookingMode = () => {
+    if (!selectedRecipe) return;
+    setCookingMode(true);
+    setCompletedIngredients(new Array(selectedRecipe.ingredients?.length || 0).fill(false));
+    setCompletedSteps(new Array(selectedRecipe.steps?.length || 0).fill(false));
+  };
+
+  const toggleIngredient = (index: number) => {
+    const updated = [...completedIngredients];
+    updated[index] = !updated[index];
+    setCompletedIngredients(updated);
+  };
+
+  const toggleStep = (index: number) => {
+    const updated = [...completedSteps];
+    updated[index] = !updated[index];
+    setCompletedSteps(updated);
   };
 
   if (loading) {
@@ -126,7 +150,7 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
         />
       )}
 
-      {/* Recipe Details Modal */}
+      {/* Recipe Modal */}
       {selectedRecipe && (
         <Modal
           animationType="slide"
@@ -137,27 +161,59 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               
+              {/* Close "X" */}
+              <TouchableOpacity 
+                style={styles.closeIcon} 
+                onPress={() => setModalVisible(false)}
+              >
+                <MaterialIcons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+
               <ScrollView style={{ width: '100%', marginBottom: 20 }}>
                 <Text style={styles.modalTitle}>{selectedRecipe.title}</Text>
+
+                {cookingMode && (
+                  <Text style={styles.cookingHint}>Tap items to mark as complete ✅</Text>
+                )}
                 
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Ingredients</Text>
-                  {selectedRecipe.ingredients && selectedRecipe.ingredients.length > 0 ? (
-                    selectedRecipe.ingredients.map((ing, idx) => (
-                      <Text key={idx} style={styles.itemText}>• {ing}</Text>
-                    ))
-                  ) : (
+                  {(selectedRecipe.ingredients || []).map((ing, idx) => (
+                    <TouchableOpacity 
+                      key={idx} 
+                      onPress={() => cookingMode && toggleIngredient(idx)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[
+                        styles.itemText,
+                        cookingMode && completedIngredients[idx] ? styles.completedText : {}
+                      ]}>
+                        • {ing}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                  {(!selectedRecipe.ingredients || selectedRecipe.ingredients.length === 0) && (
                     <Text style={styles.itemText}>No ingredients listed</Text>
                   )}
                 </View>
 
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Steps</Text>
-                  {selectedRecipe.steps && selectedRecipe.steps.length > 0 ? (
-                    selectedRecipe.steps.map((step, idx) => (
-                      <Text key={idx} style={styles.itemText}>{idx + 1}. {step}</Text>
-                    ))
-                  ) : (
+                  {(selectedRecipe.steps || []).map((step, idx) => (
+                    <TouchableOpacity 
+                      key={idx} 
+                      onPress={() => cookingMode && toggleStep(idx)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[
+                        styles.itemText,
+                        cookingMode && completedSteps[idx] ? styles.completedText : {}
+                      ]}>
+                        {idx + 1}. {step}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                  {(!selectedRecipe.steps || selectedRecipe.steps.length === 0) && (
                     <Text style={styles.itemText}>No steps listed</Text>
                   )}
                 </View>
@@ -170,26 +226,31 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
 
               </ScrollView>
 
-              {/* Buttons near the bottom */}
+              {/* Buttons */}
               <View style={styles.modalBottom}>
-                <View style={styles.buttonRow}>
-                  <TouchableOpacity style={styles.actionButton}>
-                    <Text style={styles.actionButtonText}>Edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionButton}>
-                    <Text style={styles.actionButtonText}>Delete</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionButton} onPress={handleShare}>
-                    <Text style={styles.actionButtonText}>Share</Text>
-                  </TouchableOpacity>
-                </View>
+                {!cookingMode ? (
+                  <>
+                    <View style={styles.buttonRow}>
+                      <TouchableOpacity style={styles.actionButton}>
+                        <Text style={styles.actionButtonText}>Edit</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.actionButton}>
+                        <Text style={styles.actionButtonText}>Delete</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.actionButton} onPress={handleShare}>
+                        <Text style={styles.actionButtonText}>Share</Text>
+                      </TouchableOpacity>
+                    </View>
 
-                <TouchableOpacity
-                  style={styles.closeButtonFull}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.closeButtonText}>Close</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.closeButtonFull} onPress={activateCookingMode}>
+                      <Text style={styles.closeButtonText}>Activate</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <TouchableOpacity style={styles.closeButtonFull} onPress={() => setCookingMode(false)}>
+                    <Text style={styles.closeButtonText}>Finish Cooking</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
             </View>
@@ -221,7 +282,7 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 16, color: '#666', textAlign: 'center', marginTop: 8 },
   errorText: { fontSize: 16, color: '#dc2626', textAlign: 'center' },
 
-  // Modal styles
+  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.3)',
@@ -236,12 +297,25 @@ const styles = StyleSheet.create({
     maxHeight: '85%',
     justifyContent: 'space-between',
     alignItems: 'center',
+    position: 'relative',
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    padding: 6,
+    zIndex: 1,
   },
   modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 15, color: '#1b4332', textAlign: 'center' },
   section: { marginBottom: 15 },
   sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6, color: '#1b4332' },
   itemText: { fontSize: 15, color: '#2d6a4f', marginBottom: 6, lineHeight: 22 },
+  completedText: { 
+    textDecorationLine: 'line-through', 
+    color: '#2d6a4f'  // greenish color for crossed items
+  },
   youtubeLink: { fontSize: 16, color: '#1d4ed8', textDecorationLine: 'underline', marginBottom: 12 },
+  cookingHint: { fontSize: 14, color: '#555', textAlign: 'center', marginBottom: 10 },
 
   modalBottom: {
     width: '100%',
