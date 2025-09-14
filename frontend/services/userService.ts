@@ -1,4 +1,4 @@
-const backendUrl = "https://d647843159d4.ngrok-free.app"; // replace with your backend
+const backendUrl = "https://50215923ba86.ngrok-free.app"; // replace with your backend
 
 export interface Recipe {
   id?: number;  // recipe_id from database

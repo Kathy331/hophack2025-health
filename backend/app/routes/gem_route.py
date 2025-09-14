@@ -2,8 +2,8 @@
 from fastapi import APIRouter, File, UploadFile, Request, Form, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from app.services.gem_service import parse_receipt, analyze_image, generate_recipe
-from app.services.gem_service import parse_receipt, analyze_image, generate_recipe
+from services.gem_service import parse_receipt, analyze_image, generate_recipe
+from services.gem_service import parse_receipt, analyze_image, generate_recipe
 
 router = APIRouter()
 
