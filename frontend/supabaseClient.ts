@@ -15,3 +15,23 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       detectSessionInUrl: false, // not needed for React Native
     },
   });
+
+// Function to fetch food data from Supabase
+export async function fetchFoodData() {
+  try {
+    const { data, error } = await supabase
+      .from("food_data") // Replace with your actual table name
+      .select("*, timestamp") // Ensure to include the timestamp column
+      .order("timestamp", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching food data:", error);
+      return null;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Unexpected error fetching food data:", err);
+    return null;
+  }
+}

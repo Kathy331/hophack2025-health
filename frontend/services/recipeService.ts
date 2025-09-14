@@ -49,3 +49,42 @@ export async function fetchUserRecipes(userId: string): Promise<Recipe[]> {
     return [];
   }
 }
+
+// Save a recipe to Supabase
+export async function saveRecipeToSupabase(recipe: Recipe, userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("saved_recipes") // Replace with your actual table name
+      .insert([{ ...recipe, user_id: userId }]);
+
+    if (error) {
+      console.error("Error saving recipe:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+  } catch (err: unknown) {
+    console.error("Unexpected error saving recipe:", err);
+    return { success: false, error: (err as Error).message };
+  }
+}
+
+// Delete a recipe from Supabase
+export async function deleteRecipeFromSupabase(recipe: Recipe, userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from("saved_recipes") // Replace with your actual table name
+      .delete()
+      .match({ id: recipe.id, user_id: userId });
+
+    if (error) {
+      console.error("Error deleting recipe:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+  } catch (err: unknown) {
+    console.error("Unexpected error deleting recipe:", err);
+    return { success: false, error: (err as Error).message };
+  }
+}
