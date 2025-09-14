@@ -138,13 +138,15 @@ def analyze_image(image_bytes: bytes) -> dict:
     image = Image.open(io.BytesIO(image_bytes))
     model = genai.GenerativeModel("gemini-2.5-flash")
     prompt = (
-        "1. Extract food items from the image and their estimated shelf life in days. 2. Return the number of each item in the photo"
+        "1. Extract food items from the image and their estimated shelf life in days. "
+        "2. For each item, include the recommended storage location ('F' for freezer, 'R' for refrigerator, 'S' for shelf). "
         "Return **ONLY** valid JSON in this format:\n"
-        '{"items": [{"name": "string", "shelf_life_days": int, "num_of_occurences": int}]}'
+        '{"items": [{"name": "string", "shelf_life_days": int, "storage_location": "F|R|S"}]}'
     )
     response = model.generate_content([prompt, image])
     print(safe_parse_gemini_response(response.text))
     return safe_parse_gemini_response(response.text)
+
 
 
 #fixes critical error where front end returns empty json bc there were spaces in the gemini response. Deletes any whitespace

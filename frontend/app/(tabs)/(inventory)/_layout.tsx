@@ -21,15 +21,15 @@ const imageSize = (screenWidth - cardMargin * (numColumns + 1)) / numColumns;
 
 // Helper function: return color based on expiration
 function getCardColor(exp_date: string | null) {
-  if (!exp_date) return "#6EBD6D"; // default green for unknown expiry
+  if (!exp_date) return "#a1958c"; // default green for unknown expiry
 
   const today = new Date();
   const exp = new Date(exp_date);
   const diffDays = Math.ceil((exp.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
   if (diffDays <= 2) return "#FF4C4C";      // red
-  if (diffDays <= 5) return "#FF8C42";      // orange
-  if (diffDays <= 10) return "#FFD700";     // yellow
+  if (diffDays <= 5) return "#db9c65";      // orange
+  if (diffDays <= 10) return "#e3cd68";     // yellow
   if (diffDays <= 20) return "#B4E197";     // light green
   return "#3CA55C";                         // lighter dark green
 }

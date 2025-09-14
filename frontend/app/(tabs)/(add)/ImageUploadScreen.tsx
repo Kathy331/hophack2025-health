@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { analyzeImageWithGemini } from '../../../services/geminiService';
+import { supabase } from '../../../supabaseClient';
 
 const { width } = Dimensions.get('window');
 
@@ -88,8 +89,16 @@ export default function ImageUploadScreen() {
 
     setLoading(true);
     try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        Alert.alert('Error', 'User not found. Please log in again.');
+        return;
+      }
+
+      const user_uuid = data.user.id;
+
       for (const image of selectedImages) {
-        await analyzeImageWithGemini(image);
+        await analyzeImageWithGemini(image, user_uuid); // ✅ pass user_uuid
       }
     } catch {
       Alert.alert('Analysis Failed', 'Unable to analyze images.');
@@ -296,6 +305,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000, // Ensure it is above all other elements
+    zIndex: 1000,
   },
 });

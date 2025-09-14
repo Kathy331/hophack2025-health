@@ -66,7 +66,7 @@ export const finalizeItems = async (payload: FinalizeItemsPayload) => {
 
 // analyzeImageWithGemini remains unchanged
 
-export const analyzeImageWithGemini = async (imageUri: string) => {
+export const analyzeImageWithGemini = async (imageUri: string, user_uuid: string) => {
   try {
     const formData = new FormData();
     formData.append("file", {
@@ -75,7 +75,10 @@ export const analyzeImageWithGemini = async (imageUri: string) => {
       name: "food.jpg",
     } as any);
 
-    const response = await fetch(`${backendUrl}/gem/analyze-image`, {  // <-- add /gem
+    // 👇 include user UUID
+    formData.append("user_uuid", user_uuid);
+
+    const response = await fetch(`${backendUrl}/gem/analyze-image`, {
       method: "POST",
       body: formData,
     });

@@ -3,7 +3,7 @@ from fastapi import APIRouter, File, UploadFile, Request, Form, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from services.gem_service import parse_receipt, analyze_image, generate_recipe
-from services.gem_service import parse_receipt, analyze_image, generate_recipe
+from services.item_service import insert_analyzed_items
 
 router = APIRouter()
 
@@ -50,7 +50,22 @@ async def parse_receipt_endpoint(file: UploadFile = File(...)):
 
 
 @router.post("/analyze-image")
-async def analyze_image_endpoint(file: UploadFile = File(...)):
+async def analyze_image_endpoint(
+    file: UploadFile = File(...),
+    user_uuid: str = Form(...)   # grab user_uuid from FormData
+):
+    # 1️⃣ Read the image bytes
     image_bytes = await file.read()
-    result_json = analyze_image(image_bytes)
-    return {"analysis": result_json}
+
+    # 2️⃣ Analyze the image with Gemini
+    items_json = analyze_image(image_bytes)
+
+    # 3️⃣ Insert analyzed items into Supabase with defaults
+    db_result = await insert_analyzed_items(user_uuid, items_json)
+
+    # 4️⃣ Return both the analysis and DB insertion result
+    return {
+        "analysis": items_json,
+        "db_result": db_result,
+        "user_uuid": user_uuid
+    }

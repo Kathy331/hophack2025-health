@@ -3,6 +3,7 @@ from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 from typing import Optional, Dict, Any
+from datetime import datetime, timedelta
 import asyncio
 
 # Load environment variables
@@ -44,3 +45,40 @@ async def insert_items_into_supabase(user_uuid: str, items_json: Dict[str, Any])
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+async def insert_analyzed_items(user_uuid: str, items_json: Dict[str, Any]) -> Dict[str, Any]:
+    """Take the Gemini-analyzed JSON and insert into Supabase with defaults applied"""
+    rows_to_insert = []
+
+    for item in items_json.get("items", []):
+        name: Optional[str] = item.get("name")
+        if not name:
+            continue
+
+        date_bought = datetime.today().strftime("%Y-%m-%d")
+        shelf_life_days = item.get("shelf_life_days")
+
+        # Compute estimated_expiration if shelf_life_days is provided
+        estimated_expiration = (
+            (datetime.today() + timedelta(days=shelf_life_days)).strftime("%Y-%m-%d")
+            if shelf_life_days is not None else None
+        )
+
+        row = {
+            "user_uuid": user_uuid,
+            "name": name,
+            "date_bought": date_bought,
+            "price": item.get("price", 0.0),
+            "estimated_expiration": estimated_expiration,
+            "storage_location": item.get("storage_location"),
+        }
+
+        rows_to_insert.append(row)
+
+    if not rows_to_insert:
+        return {"status": "no items to insert"}
+
+    try:
+        response = await asyncio.to_thread(lambda: supabase.table("items").insert(rows_to_insert).execute())
+        return {"status": "success", "result": response.data}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
