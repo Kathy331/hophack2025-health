@@ -11,18 +11,18 @@ import {
 } from 'react-native';
 
 const images = [
-  { id: '1', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'onShelf' },
-  { id: '2', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf'  },
-  { id: '3', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge'  },
-  { id: '4', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#4E944F', foodLocation: 'fridge' },
-  { id: '5', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'fridge'  },
-  { id: '6', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf'   },
-  { id: '7', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'fridge' },
-  { id: '8', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf'  },
-  { id: '9', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge'  },
-  { id: '10', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#6cb06dff', foodLocation: 'freezer' },
-  { id: '11', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'freezer'  },
-  { id: '12', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf' },
+  { id: '1', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'onShelf', expDate: 'date'},
+  { id: '2', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf', expDate: 'date'  },
+  { id: '3', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge', expDate: 'date'  },
+  { id: '4', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#4E944F', foodLocation: 'fridge', expDate: 'date' },
+  { id: '5', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'fridge', expDate: 'date'  },
+  { id: '6', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf', expDate: 'date'   },
+  { id: '7', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'fridge', expDate: 'date' },
+  { id: '8', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf' , expDate: 'date' },
+  { id: '9', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge', expDate: 'date'  },
+  { id: '10', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#6cb06dff', foodLocation: 'freezer' , expDate: 'date'},
+  { id: '11', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'freezer', expDate: 'date'  },
+  { id: '12', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf', expDate: 'date' },
 ];
 
 const numColumns = 3;
@@ -34,15 +34,18 @@ function FruitCard({
   name,
   color,
   uri,
+  expDate,
 }: {
   name: string;
   color: string;
   uri: string;
+  expDate: string;
 }) {
   return (
     <View style={[styles.card, { backgroundColor: color }]}>
       <Image source={{ uri }} style={styles.image} />
       <Text style={styles.cardText}>{name}</Text>
+      <Text style={styles.cardText}>{expDate}</Text>
     </View>
   );
 }
@@ -59,9 +62,6 @@ const locationMap = {
 };
 
 const filteredImages = images.filter(item => item.foodLocation === locationMap[viewMode]);
-
-
-
 
   const rows = [];
   for (let i = 0; i < filteredImages.length; i += numColumns) {
@@ -120,7 +120,7 @@ const filteredImages = images.filter(item => item.foodLocation === locationMap[v
         renderItem={({ item: rowItems }) => (
           <View style={styles.shelfRow}>
             {rowItems.map((item) => (
-              <FruitCard key={item.id} name={item.name} color={item.color} uri={item.uri} />
+              <FruitCard key={item.id} name={item.name} color={item.color} uri={item.uri} expDate={item.expDate}/>
             ))}
            <View
             style={[
