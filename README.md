@@ -15,7 +15,7 @@
   <h3 align="center">Gobble - Intelligent Food Management</h3>
 
   <p align="center">
-    John's Hopkins University Hackathon 2025 Submission
+    Johns Hopkins University Hackathon 2025 Submission
     <br />
     <a href="https://github.com/Kathy331/hophack2025-health"><strong>Explore the docs »</strong></a>
     <br />
