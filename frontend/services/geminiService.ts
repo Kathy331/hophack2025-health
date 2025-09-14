@@ -1,4 +1,4 @@
-const backendUrl = "https://cc5a81413d47.ngrok-free.app";
+const backendUrl = "https://921f59966aaa.ngrok-free.app";
 
 
 export const sendReceiptToBackend = async (imageUri: string) => {
@@ -17,6 +17,9 @@ export const sendReceiptToBackend = async (imageUri: string) => {
 
     if (!response.ok) {
       const text = await response.text();
+      if (response.status === 502) {
+        throw new Error("Server is not running. Please start the backend server on port 3000.");
+      }
       throw new Error(`Server error ${response.status}: ${text}`);
     }
 
@@ -25,6 +28,9 @@ export const sendReceiptToBackend = async (imageUri: string) => {
     return data.parsed; // parsed JSON with items
   } catch (error) {
     console.error("Error sending receipt to backend:", error);
+    if (error instanceof Error && (error.message.includes("Failed to fetch") || error.message.includes("Network request failed"))) {
+      throw new Error("Cannot connect to server. Please ensure the backend is running and ngrok is configured correctly.");
+    }
     throw error;
   }
 };
