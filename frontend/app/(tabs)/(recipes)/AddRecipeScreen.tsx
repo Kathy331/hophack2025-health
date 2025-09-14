@@ -15,7 +15,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/userService';
 import { supabase } from '../../../supabaseClient';
 
-const backendUrl = "https://d3171d9b7207.ngrok-free.app";
+const backendUrl = "https://8c13de897f19.ngrok-free.app";
 
 
 interface Recipe {
