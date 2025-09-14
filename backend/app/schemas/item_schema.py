@@ -11,6 +11,3 @@ class ItemSchema(BaseModel):
         None, description="Estimated expiration date, if available"
     )
     storage_location: str = Field(..., description="Storage location: 'F', 'R', or 'S'")
-
-    class Config:
-        orm_mode = True  # Allows returning SQLAlchemy or Supabase rows directly

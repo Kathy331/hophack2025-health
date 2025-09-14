@@ -1,8 +1,19 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from typing import Dict, Any
-from app.services.item_service import insert_items_into_supabase
+from typing import Dict, Any, List
+from uuid import UUID
+from app.services.item_service import insert_items_into_supabase, supabase
 from app.services.gem_service import predict_expirations
+
+class ItemSchema(BaseModel):
+    id: int
+    name: str
+    date_bought: str
+    estimated_expiration: str | None
+    price: float
+    user_uuid: str
+
+router = APIRouter()
 
 router = APIRouter()
 
@@ -13,7 +24,7 @@ class ItemsPayload(BaseModel):
 @router.post("/finalize-items")
 async def finalize_items_endpoint(payload: ItemsPayload):
     """
-    Finalize receipt items:
+    Process receipt items:
     1. Predict missing expiration dates
     2. Insert items into Supabase
     3. Return clean response
@@ -30,3 +41,17 @@ async def finalize_items_endpoint(payload: ItemsPayload):
         "items": result.get("result", []),
         "message": result.get("message", "")
     }
+
+
+
+@router.get("/get-items", response_model=List[ItemSchema])
+async def get_items_endpoint(user_uuid: UUID = Query(...)):
+    """
+    Retrieve all items belonging to a specific user by their UUID.
+    """
+    response = supabase.table("items").select("*").eq("user_uuid", str(user_uuid)).execute()
+
+    if not response.data:  # Supabase Python client returns data directly
+        raise HTTPException(status_code=404, detail="No items found for this user")
+
+    return response.data
