@@ -4,8 +4,7 @@ from typing import Dict, Any, List
 from services.item_service import insert_items_into_supabase
 from services.gem_service import predict_expirations
 from uuid import UUID
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+
 
 
 from db import supabase  # your Supabase client
