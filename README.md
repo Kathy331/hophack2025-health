@@ -104,13 +104,13 @@ Our app (Gobble) is your one-stop shop for food management. It has a dashboard f
    npm install
    ```
 3. Setting up Python environment in VS Code:
-  ```bash
-  cd backend
-  # Create and activate virtual environment
-  python3 -m venv venv
-  source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-  pip install -r requirements.txt
-  ```
+    ```bash
+    cd backend
+    # Create and activate virtual environment
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    pip install -r requirements.txt
+    ```
 
   ### Select the Virtual Environment in VS Code:
   1. Open Command Palette (Cmd/Ctrl + Shift + P)
@@ -167,7 +167,7 @@ Our app (Gobble) is your one-stop shop for food management. It has a dashboard f
 
 <!-- USAGE -->
 ## Usage
-[demo](https://youtu.be/B0gPpqxy5SE)
+<!-- [demo]() -->
 Once the app is running, you can:
 <!-- Home Page-->
 - **Sign up / Log in**: Create a new account or log in with your existing credentials
