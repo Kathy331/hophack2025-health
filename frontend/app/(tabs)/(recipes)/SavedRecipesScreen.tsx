@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   itemText: { fontSize: 15, color: '#2d6a4f', marginBottom: 6, lineHeight: 22 },
   completedText: { 
     textDecorationLine: 'line-through', 
-    color: '#2d6a4f'  // greenish color for crossed items
+    color: '#32CD32'  // greenish color for crossed items
   },
   youtubeLink: { fontSize: 16, color: '#1d4ed8', textDecorationLine: 'underline', marginBottom: 12 },
   cookingHint: { fontSize: 14, color: '#555', textAlign: 'center', marginBottom: 10 },
