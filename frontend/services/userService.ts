@@ -1,3 +1,4 @@
+
 const backendUrl = "https://d3171d9b7207.ngrok-free.app"; // replace with your backend
 
 export interface Recipe {

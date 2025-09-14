@@ -1,5 +1,5 @@
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -16,23 +17,28 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // Example Dashboard screens
 function Dashboard() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#2C6E49' }}>
-        Dashboard Screen
-      </Text>
+    <SafeAreaView style={[styles.container, styles.dashboardContainer]}>
+      <Text style={[styles.dashboardTitle, { marginTop: 20 }]}>Guess how much food you've saved already? 🍏</Text>
+      <Image
+        source={require('../../../assets/images/bar_graph_with_average.png')}
+        style={styles.dashboardImageLarge}
+      />
     </SafeAreaView>
   );
 }
 
 function DashboardCosts() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#2C6E49' }}>
-        Dashboard - Costs
-      </Text>
+    <SafeAreaView style={[styles.container, styles.dashboardContainer]}>
+      <Text style={[styles.dashboardTitle, { marginTop: 20 }]}>How much are you saving? 💰</Text>
+      <Image
+        source={require('../../../assets/images/money_graph.png')}
+        style={styles.dashboardImageLarge}
+      />
     </SafeAreaView>
   );
 }
+
 
 // --- Types ---
 type Item = {
@@ -92,7 +98,7 @@ const foodWaste: Section[] = [
     data: [
       {
         key: 'apple-fw',
-        label: 'You saved 5 apples from food waste this week! 🍏',
+        label: 'You saved 3 pieces of food from being wasted this week! 🍏',
         containerStyle: {
           backgroundColor: '#EAF8E6',
           paddingVertical: 24,
@@ -112,7 +118,7 @@ const costs: Section[] = [
     data: [
       {
         key: 'apple-cost',
-        label: 'You saved $10.00 on apples this week! 💰',
+        label: 'You saved $10.00 on food this week! 💰',
         containerStyle: {
           backgroundColor: '#EAF8E6',
           paddingVertical: 24,
@@ -254,12 +260,12 @@ export default function App() {
       <Stack.Screen
         name="Dashboard"
         component={Dashboard}
-        options={{ title: 'Dashboard' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="DashboardCosts"
         component={DashboardCosts}
-        options={{ title: 'Costs Dashboard' }}
+        options={{ headerShown: false }} // Hide the header for DashboardCosts
       />
     </Stack.Navigator>
   );
@@ -335,4 +341,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#91b399ff',
     marginVertical: 8,
   },
+  // Dashboard specific styles
+  dashboardContainer: {
+    alignItems: 'center',
+    backgroundColor: '#EAF8E6', // Light green background for sustainability theme
+    padding: 20,
+  },
+  dashboardTitle: {
+  fontSize: 35,
+  fontWeight: 'bold',
+    // less space below title
+  textAlign: 'center',
+  marginTop: 5,      // very close to the top
+  color: "green",
+},
+
+dashboardImageLarge: {
+  width: '95%',
+  height: 350,       // slightly smaller to fit near top
+  resizeMode: 'contain',
+  borderColor: '#A0D995',
+  shadowColor: '#000',
+  shadowOpacity: 0.2,
+  shadowOffset: { width: 0, height: 2 },
+  shadowRadius: 4,
+  elevation: 5,
+  alignSelf: 'center',
+  marginTop: 10,      // small space between title & image
+  borderRadius: 30,
+},
+
 });

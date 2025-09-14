@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+
 import { 
   View, 
   Text, 
@@ -11,9 +12,10 @@ import {
   Share, 
   Linking 
 } from 'react-native';
+
 import { MaterialIcons } from '@expo/vector-icons';
 import SearchBar from '../../../components/SearchBar';
-import { fetchUserRecipes, Recipe } from '../../../services/recipeService';
+import { fetchUserRecipes, Recipe, saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/recipeService';
 
 function SavedRecipesScreen({ userId }: { userId: string }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -43,6 +45,7 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
   const filteredRecipes = recipes.filter(recipe =>
     recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
 
   const renderRecipeCard = ({ item }: { item: Recipe }) => (
     <TouchableOpacity 
@@ -108,7 +111,10 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+    >
       <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
       {filteredRecipes.length === 0 ? (
         <View style={styles.centered}>
@@ -118,12 +124,13 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
           </Text>
         </View>
       ) : (
-        <FlatList
-          data={filteredRecipes}
-          renderItem={renderRecipeCard}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.list}
-        />
+        <View style={styles.list}>
+          {filteredRecipes.map((item) => (
+            <View key={item.id} style={styles.recipeItem}>
+              <Text style={styles.recipeTitle}>{item.title}</Text>
+            </View>
+          ))}
+        </View>
       )}
 
       {/* Recipe Details Modal */}
@@ -197,56 +204,11 @@ ${selectedRecipe.url ? `YouTube Link: ${selectedRecipe.url}` : ''}
         </Modal>
       )}
     </View>
+
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#e9f5ec' },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  list: { padding: 15 },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1b4332', marginBottom: 8 },
-  metricRow: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#f0fff4', borderRadius: 8, padding: 8 },
-  metric: { fontSize: 14, color: '#2d6a4f' },
-  emptyText: { fontSize: 16, color: '#666', textAlign: 'center', marginTop: 8 },
-  errorText: { fontSize: 16, color: '#dc2626', textAlign: 'center' },
-
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    width: '90%',
-    maxHeight: '85%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 15, color: '#1b4332', textAlign: 'center' },
-  section: { marginBottom: 15 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6, color: '#1b4332' },
-  itemText: { fontSize: 15, color: '#2d6a4f', marginBottom: 6, lineHeight: 22 },
-  youtubeLink: { fontSize: 16, color: '#1d4ed8', textDecorationLine: 'underline', marginBottom: 12 },
-
-  modalBottom: {
-    width: '100%',
-    marginTop: 10,
-    alignItems: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
