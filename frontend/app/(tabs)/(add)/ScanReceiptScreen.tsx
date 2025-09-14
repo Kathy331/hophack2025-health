@@ -22,9 +22,8 @@ interface ParsedItem {
   name: string;
   estimated_expiration: string | null;
   storage_option: 'F' | 'R' | 'S' | null;
-  price: number; // add this
+  price: number;
 }
-
 
 export default function ScanReceiptScreen() {
   const [scannedReceipts, setScannedReceipts] = useState<string[]>([]);
@@ -135,17 +134,21 @@ export default function ScanReceiptScreen() {
       for (const uri of scannedReceipts) {
         const parsed = await sendReceiptToBackend(uri);
         if (parsed.items && Array.isArray(parsed.items)) {
-          parsed.items.forEach((item: { name: string; estimated_expiration?: string; price?: number }) => {
+          parsed.items.forEach((item: { 
+            name: string; 
+            estimated_expiration?: string; 
+            price?: number; 
+            storage_option?: 'F' | 'R' | 'S' 
+          }) => {
             allParsedItems.push({ 
               name: item.name, 
               estimated_expiration: item.estimated_expiration || null, 
-              storage_option: null,
-              price: item.price ?? 0, // keep actual price if present
+              storage_option: item.storage_option || null, // default to Gemini prediction
+              price: item.price ?? 0,
             });
           });
         }
       }
-      
 
       setParsedItems(allParsedItems);
       setModalVisible(true);
@@ -180,9 +183,9 @@ export default function ScanReceiptScreen() {
   };
 
   const onChangeDate = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === 'ios'); // Keep open on iOS
+    setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
-      const formatted = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      const formatted = selectedDate.toISOString().split('T')[0];
       setEditingExpiration(formatted);
     }
   };
@@ -198,15 +201,14 @@ export default function ScanReceiptScreen() {
           items: parsedItems.map(item => ({
             name: item.name,
             date_bought: new Date().toISOString().split("T")[0],
-            price: item.price ?? 0, // use item's price if defined, otherwise 0
+            price: item.price ?? 0,
             estimated_expiration: item.estimated_expiration || undefined,
             storage_location: item.storage_option || undefined,
           })),
         },
       };
       
-  
-      const result = await finalizeItems(payload);
+      await finalizeItems(payload);
       Alert.alert("Success", "Items submitted successfully!");
       setModalVisible(false);
       setParsedItems([]);
@@ -216,7 +218,6 @@ export default function ScanReceiptScreen() {
       Alert.alert("Error", "Failed to submit items");
     }
   };
-  
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -262,7 +263,6 @@ export default function ScanReceiptScreen() {
         <Text style={styles.tipText}>• Avoid shadows and glare</Text>
       </View>
 
-      {/* Single Modal for viewing and editing */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -310,7 +310,6 @@ export default function ScanReceiptScreen() {
                   )}
                 </ScrollView>
 
-                {/* Submit Button */}
                 <TouchableOpacity 
                   style={[styles.submitButton, { marginTop: 10 }]}
                   onPress={handleSubmit}
@@ -368,7 +367,6 @@ export default function ScanReceiptScreen() {
   );
 }
 
-// Styles remain mostly the same...
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#eaf8ea' },
   contentContainer: { padding: 20, alignItems: 'center' },
@@ -393,14 +391,7 @@ const styles = StyleSheet.create({
   tipText: { fontSize: 14, color: '#4d784e', marginBottom: 4 },
 
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { 
-    backgroundColor: '#fff', 
-    borderRadius: 20, 
-    padding: 20, 
-    width: '90%', 
-    maxHeight: '80%', 
-    justifyContent: 'flex-end' 
-  },
+  modalContent: { backgroundColor: '#fff', borderRadius: 20, padding: 20, width: '90%', maxHeight: '80%', justifyContent: 'flex-end' },
 
   modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 15, color: '#1a531b', textAlign: 'center' },
   modalText: { textAlign: 'center', color: '#4d784e', fontSize: 16 },

@@ -10,4 +10,5 @@ class ItemSchema(BaseModel):
     estimated_expiration: Optional[date] = Field(
         None, description="Estimated expiration date, if available"
     )
-    storage_location: str = Field(..., description="Storage location: 'F', 'R', or 'S'")
+    storage_location: Optional[str] = Field(None, description="Storage location: 'F', 'R', or 'S'")
+

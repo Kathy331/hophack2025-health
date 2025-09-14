@@ -11,7 +11,9 @@ class ItemSchema(BaseModel):
     date_bought: str
     estimated_expiration: str | None
     price: float
+    storage_location: str
     user_uuid: str
+    
 
 router = APIRouter()
 
