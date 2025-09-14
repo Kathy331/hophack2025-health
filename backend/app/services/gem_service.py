@@ -71,8 +71,12 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def parse_receipt(image_bytes: bytes) -> dict:
     """
-    Send receipt image bytes to Gemini and return structured JSON.
+    Send receipt image bytes to Gemini and return structured JSON with
+    automatic storage prediction.
     """
+    import io
+    from PIL import Image
+
     # Convert bytes to a PIL Image
     image = Image.open(io.BytesIO(image_bytes))
 
@@ -80,35 +84,40 @@ def parse_receipt(image_bytes: bytes) -> dict:
 
     prompt = (
         "You are given a receipt image. Extract structured information about each item.\n"
-        "1. Extract each food or consumable item purchased.\n"
-        "2. Extract the purchase date (YYYY-MM-DD) if available; if not, use today's date.\n"
-        "3. Extract the price of each item; if unknown, use 0.00.\n"
-        "4. Estimate the expiration date for perishable items (YYYY-MM-DD). If unknown or non-perishable, use null.\n"
-        "Return the result strictly in valid JSON with double quotes. Example:\n"
+        "For each item, provide:\n"
+        "1. name - the item's name\n"
+        "2. date_bought - purchase date (YYYY-MM-DD). If unavailable, use today's date\n"
+        "3. price - price in dollars. If unknown, use 0.00\n"
+        "4. estimated_expiration - expiration date for perishable items (YYYY-MM-DD). Use null if unknown or non-perishable\n"
+        "5. storage_option - automatically predict storage location: 'F' for freezer, 'R' for refrigerator, 'S' for shelf/pantry.\n"
+        "Return strictly valid JSON with double quotes, no extra text. Example:\n"
         "{\n"
         "  \"items\": [\n"
         "    {\n"
         "      \"name\": \"Milk\",\n"
         "      \"date_bought\": \"2025-09-13\",\n"
         "      \"price\": 3.50,\n"
-        "      \"estimated_expiration\": \"2025-09-20\"\n"
+        "      \"estimated_expiration\": \"2025-09-20\",\n"
+        "      \"storage_option\": \"R\"\n"
         "    },\n"
         "    {\n"
         "      \"name\": \"Canned Beans\",\n"
         "      \"date_bought\": \"2025-09-13\",\n"
         "      \"price\": 1.20,\n"
-        "      \"estimated_expiration\": null\n"
+        "      \"estimated_expiration\": null,\n"
+        "      \"storage_option\": \"S\"\n"
         "    }\n"
         "  ]\n"
         "}\n"
-        "Do not include explanations or extra text."
+        "Do not include explanations or extra text. Predict the most likely storage for each item."
     )
-
 
     # Generate content
     response = model.generate_content([prompt, image])
-    print(safe_parse_gemini_response(response.text))
-    return safe_parse_gemini_response(response.text)
+    parsed = safe_parse_gemini_response(response.text)
+    print(parsed)
+    return parsed
+
 
 def predict_expirations(items_payload: dict) -> dict:
     """
