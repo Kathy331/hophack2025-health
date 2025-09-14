@@ -11,18 +11,18 @@ import {
 } from 'react-native';
 
 const images = [
-  { id: '1', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', frigeFlag: true },
-  { id: '2', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', frigeFlag: false  },
-  { id: '3', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', frigeFlag: true  },
-  { id: '4', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#4E944F', frigeFlag: true  },
-  { id: '5', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', frigeFlag: true  },
-  { id: '6', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', frigeFlag: false  },
-  { id: '7', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', frigeFlag: true },
-  { id: '8', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', frigeFlag: false  },
-  { id: '9', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', frigeFlag: true  },
-  { id: '10', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#4E944F', frigeFlag: true  },
-  { id: '11', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', frigeFlag: true  },
-  { id: '12', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', frigeFlag: false  },
+  { id: '1', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'onShelf' },
+  { id: '2', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf'  },
+  { id: '3', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge'  },
+  { id: '4', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#4E944F', foodLocation: 'fridge' },
+  { id: '5', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'fridge'  },
+  { id: '6', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf'   },
+  { id: '7', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'fridge' },
+  { id: '8', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf'  },
+  { id: '9', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge'  },
+  { id: '10', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#6cb06dff', foodLocation: 'freezer' },
+  { id: '11', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'freezer'  },
+  { id: '12', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf' },
 ];
 
 const numColumns = 3;
@@ -49,14 +49,18 @@ function FruitCard({
 
 export default function Index() {
   // ✅ Moved here
-  const [viewMode, setViewMode] = useState<'shelf' | 'fridge'>('shelf');
+  const [viewMode, setViewMode] = useState<'shelf' | 'fridge' | 'freezer'>('shelf');
 
-  // Optionally filter items based on the view mode
-// ✅ Filter based on fridgeFlag
-const filteredImages =
-  viewMode === 'shelf'
-    ? images.filter(item => !item.frigeFlag)
-    : images.filter(item => item.frigeFlag);
+
+const locationMap = {
+  shelf: 'onShelf',
+  fridge: 'fridge',
+  freezer: 'freezer',
+};
+
+const filteredImages = images.filter(item => item.foodLocation === locationMap[viewMode]);
+
+
 
 
   const rows = [];
@@ -67,7 +71,7 @@ const filteredImages =
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#EAF8E6" />
-      <Text style={styles.header}>🌱 Food Inventory</Text>
+      <Text style={styles.header}>🌱 Inventory</Text>
 
       {/* Toggle buttons */}
       <View style={styles.toggleContainer}>
@@ -90,12 +94,21 @@ const filteredImages =
         >
           Fridge
         </Text>
+        <Text
+          style={[
+          styles.toggleButton,
+          viewMode === 'freezer' && styles.activeToggleButton,
+          ]}
+          onPress={() => setViewMode('freezer')}
+        >
+          Freezer
+        </Text>
       </View>
-
     <View
       style={[
         styles.shelfArea,
         viewMode === 'fridge' && styles.fridgeBackground, // Apply gray background only in fridge mode
+        viewMode === 'freezer' && [styles.fridgeBackground, styles.freezerGlowContainer],
       ]}
     >
 
@@ -110,7 +123,8 @@ const filteredImages =
            <View
             style={[
           styles.shelfLine,
-          viewMode === 'fridge' && { backgroundColor: '#ffffffff' }, // ⬅️ override color if fridge
+          viewMode === 'fridge' && { backgroundColor: '#e4fdf4ff' }, // ⬅️ override color if fridge
+          viewMode === 'freezer' && { backgroundColor: '#e4fdf4ff'},
         ]}
       />
     </View>
@@ -132,15 +146,15 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#2C6E49',
-    paddingTop: 10,
     paddingHorizontal: 16,
     paddingBottom: 12,
     textAlign: 'center',
     fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'sans-serif-medium',
+    paddingTop: 40,
   },
   listContent: {
     paddingBottom: 20,
-    paddingHorizontal: cardMargin / 2,
+    paddingHorizontal: -10,
   },
   shelfRow: {
     flexDirection: 'row',
@@ -176,10 +190,10 @@ const styles = StyleSheet.create({
   },
   shelfLine: {
     position: 'absolute',
-    bottom: -cardMargin / 2,
+    bottom: -20,
     left: 0,
     right: 0,
-    height: 20,
+    height: 30,
     backgroundColor: '#792525ff',
     borderRadius: 2,
     zIndex: -1,
@@ -209,7 +223,22 @@ const styles = StyleSheet.create({
 },
 
 fridgeBackground: {
-  backgroundColor: '#D3D3D3', // Light gray background
+  backgroundColor: '#abcdbcff', // Light gray background
+  borderWidth: 3,
+   borderColor: '#ffffffff',
+  borderRadius: 20,
 },
+freezerGlowContainer: {
+  borderWidth: 3,
+  borderColor: '#98eef0ff',
+  shadowColor: '#8de4faff',
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 1,
+  shadowRadius: 15,
+  elevation: 15,
+  borderRadius: 20,
+  margin: 5,  // optional: give some spacing around glow
+},
+
 
 });

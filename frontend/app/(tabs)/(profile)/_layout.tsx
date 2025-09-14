@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     color: '#2C6E49',
     marginBottom: 30,
     textAlign: 'center',
+    paddingTop: 60,
   },
   label: {
     fontWeight: '600',
