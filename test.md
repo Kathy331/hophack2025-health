@@ -9,21 +9,20 @@
 <br />
 <div align="center">
   <a href="https://github.com/Kathy331/hophack2025-health">
-    <img src="ui/images/Inky6.png" alt="Logo" width="80" height="80">
+    <img src="frontend/images/Gobble.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Inky - InterviewPrep AI Agents</h3>
+  <h3 align="center">Gobble - Intelligent Food Management</h3>
 
   <p align="center">
-    A modular AI system that automates Interview preparation workflows using specialized agents.
-    Streamlines Interviewer's background discovery, Company finding, roles insights, all contributing to a comprehensive prep guide, display on Streamlit dashboard and choice to edit and send to your own email via Inky bot service.
+    John's Hopkins University Hackathon 2025 Submission
     <br />
     <a href="https://github.com/Kathy331/hophack2025-health"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://www.youtube.com/watch?v=N23SKQILCYY&feature=youtu.be">View Presentation</a>
+    <a href="https://devpost.com/software/gobble-ru6bdy?ref_content=user-portfolio&ref_feature=in_progress">View DevPost</a>
     ·
-    <a href="https://youtu.be/B0gPpqxy5SE">View Demo</a>
+    <a href="test">View Demo</a>
     ·
     <a href="https://github.com/Kathy331/hophack2025-health/issues/new?labels=bug&template=bug-report---.md">Report Bugs</a>
     ·
@@ -65,34 +64,23 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-For more information please refer to the "docs" folder. Inside, there are flowcharts folders, agents folder, guidelines (standard for interview prep guide) folder, and pipeline folder, also include architecture markdown, etc. Which will all help you to understand more about the overall project architecture.
+Our app (Gobble) is your one-stop shop for food management. It has a dashboard for you to track how much money and food you have saved through the app, reminders to remind you to eat food that is going to expire, an AI image and receipt analyzer to easily upload and keep track of the freshness of your food, and an AI recipe maker that will give you recipe recommendations based on what you currently have. Other features include a YouTube-to-recipe generator and an AI-powered shelf life calculator that accounts for putting food on the shelf, fridge, or freezer.
 
 <!-- Built With -->
 ### Built With
 
-#### AI & Machine Learning
-* ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white) - GPT models for intelligent text processing and generation
-* ![spaCy](https://img.shields.io/badge/spaCy-09A3D5?style=flat-square&logo=spacy&logoColor=white) - Named Entity Recognition for email parsing and resume analysis
-* ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white) - Machine learning utilities and text classification
-* ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat-square&logo=langchain&logoColor=white) - LLM application framework 
+#### Frontend
+* ![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat-square&logo=react&logoColor=61DAFB) - Cross-platform mobile app development
+* ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) - Type-safe JavaScript development
 
-#### Frontend & Interface
-* ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white) - Interactive web dashboard and user interface
-* ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=flat-square&logo=plotly&logoColor=white) - Data visualizations and analytics charts
+#### Backend
+* ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) - Core backend language
+* ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) - Modern, fast web framework for building APIs
+* ![Supabase](https://img.shields.io/badge/Supabase-181818?style=flat-square&logo=supabase&logoColor=white) - Open source Firebase alternative
 
-#### Backend & APIs
-* ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) - Core backend language (3.10+)
-* ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=flat-square&logo=sqlite&logoColor=white) - Interview data storage with deduplication
-* ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white) - Data manipulation and analysis
-* ![Tavily API](https://img.shields.io/badge/Tavily_API-FF6B6B?style=flat-square&logo=search&logoColor=white) - Web search and company/interviewer research intelligence
-* ![Google Gmail API](https://img.shields.io/badge/Gmail_API-EA4335?style=flat-square&logo=gmail&logoColor=white) - Email fetching and sending automation
-* ![Google OAuth](https://img.shields.io/badge/Google_OAuth-4285F4?style=flat-square&logo=google&logoColor=white) - Secure authentication and authorization
-* ![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=flat-square&logo=pydantic&logoColor=white) - Data validation and settings management
-
-#### Concepts & Techniques
-* ![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white) - Testing framework for unit tests and integration tests
-* ![RAG](https://img.shields.io/badge/RAG-1C3C3C?style=flat-square&logo=search&logoColor=white) - Retrieval-Augmented Generation for context enrichment
-* ![Cache Manager](https://img.shields.io/badge/Cache_Manager-FFA500?style=flat-square&logo=memory&logoColor=white) - OpenAI API cache optimization and output file management
+#### AI & APIs
+* ![Google Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat-square&logo=google&logoColor=white) - AI-powered text and image analysis
+* ![YouTube API](https://img.shields.io/badge/YouTube_API-FF0000?style=flat-square&logo=youtube&logoColor=white) - Video content extraction and analysis
 
 
 
@@ -101,11 +89,7 @@ For more information please refer to the "docs" folder. Inside, there are flowch
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Follow these steps to get a local copy up and running:
-
-### Prerequisites
-
-Ensure you have Python 3.10+ 
+**Warning!** This Project is done in university wifi, because of firewall issues, you might need to use your phone's hotspot to run ngrok Follow these steps to get a local copy up and running:
 
 ### Setup
 
@@ -114,53 +98,69 @@ Ensure you have Python 3.10+
    git clone https://github.com/Kathy331/hophack2025-health.git
    cd hophack2025-health
    ```
-
-2. Create and activate a virtual environment:
+2. Install dependencies
    ```bash
-   python3 -m venv .venv.  #On Windows: python -m venv .venv
-   source .venv/bin/activate #On Windows: .venv\Scripts\activate
+   cd frontend
+   npm install
    ```
+3. Setting up Python environment in VS Code:
+  ```bash
+  cd backend
+  # Create and activate virtual environment
+  python3 -m venv venv
+  source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+  pip install -r requirements.txt
+  ```
 
-3. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ``` 
-   make sure to also download spacy model before running workflow_runner.py
-   ```bash
-    python -m spacy download en_core_web_sm
-   ``` 
-4. Copy .env.example to .env and fill in your:
-    - OpenAI API Key (create one here: https://platform.openai.com/api-keys)
-    - Tavily API Key (create one here: https://www.tavily.com/)
-    - Google API credentials JSON file (create one here: https://cloud.google.com/docs/authentication/getting-started) or contact any of the developers to get the secret file
-   ```bash
+  ### Select the Virtual Environment in VS Code:
+  1. Open Command Palette (Cmd/Ctrl + Shift + P)
+  2. Type "Python: Select Interpreter"
+  3. Choose the interpreter from ./venv/bin/python (python 1.10+)
+  
+  ### To verify the interpreter:
+  - Look at the bottom-left corner of VS Code
+  - Should show "Python ('venv': venv)"
+  - Or run this in terminal: `which python`
+  - use `deactivate` command to exit the virtual environment
+
+4. ngrok is used to expose the backend server to the internet so that the expo app can access it. set up ngrok account from https://dashboard.ngrok.com/signup and after logging in, go to https://dashboard.ngrok.com/get-started/your-authtoken and copy your authtoken.
+    ```bash
+    npm install -g ngrok
+    ```
+    ```bash
+    ngrok config add-authtoken <your-authtoken>
+    ```
+5. Copy .env.example to .env and fill in your:
+    - GEMINI_API_KEY from https://aistudio.google.com/app/apikey
+    ```bash
+    cd backend
     cp .env.example .env
-   ``` 
-5. Set up bot email credentials:
-   - Follow the instructions in `setup_bot_email.py` to authenticate with Gmail API
-   - Ensure you have the `google_oauth` folder with your credentials JSON file
-
-6. Run the Streamlit app:
-   ```bash
-   streamlit run ui/testui/app.py
-   ```
-
-7. Optional: Use Docker for containerized deployment:
-    Download Docker for Mac or Windows: https://www.docker.com/  
-   ```bash
-   docker compose up --build 
-   ```
-8. Testing:
-    to run all test you could run: 
-    ```bash
-    pytest
     ```
-    but please be careful of token limits, to run a single test, run: 
     ```bash
-    pytest tests/test_agents/test_keyword_extractor.py
+    GEMINI_API_KEY=your_gemini_api_key
     ```
-    there will be an `outputs` file generated for you to better see your test results 
+6. find config.ts and Set the 
+    - backendUrl (the https forwarding url you get from ngrok)
+    ```bash
+    export const backendUrl = "your_ngrok_url"
+    ```
 
+7. Development set up (Terminal A): start ngrok in a new terminal window
+    ```bash
+    cd backend
+    ngrok http 3000
+    ```
+8. Development set up (Terminal B): start the backend server
+    ```bash
+    cd backend
+    uvicorn app.main:app --host 0.0.0.0 --port 3000 --reload
+    ```
+9. Development set up (Terminal C): start the frontend server
+    ```bash
+    cd frontend
+    npx expo start --tunnel
+    ```
+  
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -169,180 +169,29 @@ Ensure you have Python 3.10+
 ## Usage
 [demo](https://youtu.be/B0gPpqxy5SE)
 Once the app is running, you can:
-<!-- demo video with all features below: [link to demo video] ##TODO: add link to demo video -->
-- **View the dashboard**: Access the Streamlit interface in your browser (usually at `http://localhost:8501`)
-- **Set up your bot email**: Authenticate with Gmail to enable sending emails directly from the app
-- **Generate prep guides**: Use the provided buttons to trigger different agents:
-- **Monitor logs**: Check the console output for agent activity and debugging information
-- **Send emails**: Use the Inky bot service to send personalized application emails directly from the app, you can send all the generated prep guide to your own email or pick a specific email address to send 
-- **View results**: Check the generated prep guide on the dashboard, which includes company insights, role details, and personalized questions
-- **Edit and save**: Modify the prep guide as needed and save it to your local machine or send it via email
-- **Download files**: Download any generated files or reports for offline access
+<!-- Home Page-->
+- **Sign up / Log in**: Create a new account or log in with your existing credentials
+- **View your dashboard**: See an overview of your food inventory, savings, and recent activity
+- **Smart recipe suggestions**: Get personalized recipe ideas based on your available ingredients, and soon to be expired food items
 
+<!-- Inventory -->
+- **View your inventory**: See a list of all food items you have added in shelf, refrigerator, and freezer
+- **Track expiration dates**: Monitor the freshness of your food with automatic expiration date tracking and notifications
+<!-- - **Update quantities**: Easily adjust the quantity of each food item as you use or add
+- **Search and filter**: Quickly find specific food items by name, category, or expiration status -->
 
+<!-- Add -->
+- **Add food items**: Scan receipts or upload images to automatically add food items to your inventory with AI-powered analysis
+- **Select storage location**: Specify if the food is stored in the refrigerator, freezer, or shelf for accurate shelf life calculations
+- **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<!-- Recipes -->
+- **paste in a YouTube link**: Get a full recipe generated, ingredient list, from any YouTube cooking video
+<!-- Profile -->
+- **View and edit your profile**: Manage your account settings, preferences, and personal information
+<!-- - **Track your savings**: See how much money and food you have saved by using the app over time
+- **Settings**: Customize your notification preferences, theme, and other app settings -->
 
-<!--FlowChart -->
-## System Architecture Diagram
-
-```mermaid
-flowchart TB
-    subgraph EmailPipeline["📧 Email Pipeline"]
-        direction TB
-        InterviewFolder["📁 INTERVIEW_FOLDER<br>• Configurable email source<br>• Individual email processing"]
-        EmailClassifier["📬 Email Classifier Agent<br>• Interview vs Personal vs Other<br>• OpenAI GPT-4o-mini"]
-        EntityExtractor["🎯 Entity Extractor Agent<br>• Company, Role, Interviewer<br>• Custom spaCy NER model"]
-        KeywordExtractor["🏷️ Keyword Extractor Agent<br>• Company name extraction<br>• Safe filename generation"]
-        MemoryCheck{"🧠 Memory Systems Check<br>• Interview Store lookup<br>• Duplicate prevention"}
-    end
-
-    subgraph DeepResearchPipeline["🔬 Deep Research Pipeline"]
-        direction TB
-        ResearchCoordinator["🤖 Research Coordinator<br>• Multi-agent orchestration<br>• Parallel API calls"]
-        CompanyResearch["🏢 Company Research Agent<br>• Tavily API integration<br>• Culture & news analysis"]
-        RoleResearch["💼 Role Research Agent<br>• Market trends analysis<br>• Skill requirements"]
-        InterviewerResearch["👤 Interviewer Research Agent<br>• LinkedIn profile search<br>• Professional background"]
-        QualityReflection["🤔 Research Quality Reflection<br>• Adequacy validation<br>• Additional research loops"]
-    end
-
-    subgraph PrepGuidePipeline["📚 Prep Guide Pipeline"]
-        direction TB
-        GuideGenerator["📝 Personalized Guide Generator<br>• OpenAI GPT-4o integration<br>• Research-driven content"]
-        TechnicalPrep["⚡ Technical Prep Section<br>• Role-specific competencies<br>• Sample questions"]
-        InterviewerInsights["👥 Interviewer Background Analysis<br>• Professional insights<br>• Connection points"]
-        StrategicQuestions["❓ Strategic Questions Generator<br>• Personalized inquiries<br>• Research-backed"]
-        CitationEngine["📄 Citation Engine<br>• Source references<br>• Research credibility"]
-    end
-
-    subgraph CacheManagement["💾 Cache Management Systems"]
-        direction TB
-        TavilyCache["🌐 Tavily Cache<br>• API response caching<br>• Query optimization<br>• cache/tavily/ directory"]
-        OpenAICache["🤖 OpenAI Cache<br>• Response caching<br>• Cost optimization<br>• .openai_cache/ directory"]
-        CacheManager["⚙️ Cache Manager CLI<br>• Status monitoring<br>• Cache clearing<br>• Optimization tools"]
-    end
-
-    subgraph MemorySystems["🧠 Memory Systems"]
-        direction TB
-        InterviewStore["📋 Interview Store<br>• SQLite database<br>• Deduplication logic<br>• Status tracking"]
-        ResumeMemory["📄 Resume Memory<br>• User profile storage<br>• Skills & experience<br>• Context integration"]
-        SharedMemory["🌉 Shared Memory Layer<br>• Cross-agent context<br>• State synchronization"]
-    end
-
-    subgraph WorkflowOrchestration["🎯 Workflow Orchestration"]
-        direction TB
-        MainWorkflow["🚀 Interview Prep Workflow<br>• Individual email processing<br>• Terminal feedback<br>• workflows/interview_prep_workflow.py"]
-        WorkflowRunner["⚡ Workflow Runner<br>• Pipeline coordination<br>• Error handling<br>• workflows/workflow_runner.py"]
-    end
-
-    subgraph OutputManagement["📁 Output Management"]
-        direction TB
-        FileOutput["📝 Individual Company Files<br>• outputs/fullworkflow/<br>• [company_name].txt format<br>• Complete prep guides"]
-        TerminalFeedback["💬 Real-time Terminal Output<br>• Processing progress<br>• Classification results<br>• Research status"]
-    end
-
-    %% Main workflow connections
-    MainWorkflow --> InterviewFolder
-    InterviewFolder --> EmailClassifier
-    EmailClassifier --> EntityExtractor
-    EntityExtractor --> KeywordExtractor
-    KeywordExtractor --> MemoryCheck
-    
-    %% Memory check branching
-    MemoryCheck -->|"Already Processed"| TerminalFeedback
-    MemoryCheck -->|"New Interview"| ResearchCoordinator
-    
-    %% Research pipeline flow
-    ResearchCoordinator --> CompanyResearch
-    ResearchCoordinator --> RoleResearch  
-    ResearchCoordinator --> InterviewerResearch
-    CompanyResearch --> QualityReflection
-    RoleResearch --> QualityReflection
-    InterviewerResearch --> QualityReflection
-    
-    %% Quality reflection branching
-    QualityReflection -->|"Sufficient"| GuideGenerator
-    QualityReflection -->|"Insufficient"| ResearchCoordinator
-    
-    %% Prep guide pipeline flow
-    GuideGenerator --> TechnicalPrep
-    GuideGenerator --> InterviewerInsights
-    GuideGenerator --> StrategicQuestions
-    TechnicalPrep --> CitationEngine
-    InterviewerInsights --> CitationEngine
-    StrategicQuestions --> CitationEngine
-    CitationEngine --> FileOutput
-    
-    %% Cache integration
-    CompanyResearch <--> TavilyCache
-    RoleResearch <--> TavilyCache
-    InterviewerResearch <--> TavilyCache
-    GuideGenerator <--> OpenAICache
-    TechnicalPrep <--> OpenAICache
-    InterviewerInsights <--> OpenAICache
-    StrategicQuestions <--> OpenAICache
-    
-    %% Memory systems integration
-    MemoryCheck <--> InterviewStore
-    EntityExtractor <--> ResumeMemory
-    ResearchCoordinator <--> SharedMemory
-    GuideGenerator <--> SharedMemory
-    
-    %% Cache management
-    CacheManager --> TavilyCache
-    CacheManager --> OpenAICache
-    
-    %% Workflow coordination
-    WorkflowRunner --> MainWorkflow
-    MainWorkflow --> TerminalFeedback
-    FileOutput --> TerminalFeedback
-
-    %% Non-interview email handling
-    EmailClassifier -->|"Personal/Other"| TerminalFeedback
-
-    %% Styling
-    classDef emailStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000000
-    classDef researchStyle fill:#f1f8e9,stroke:#558b2f,stroke-width:2px,color:#000000
-    classDef prepStyle fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px,color:#000000
-    classDef cacheStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000000
-    classDef memoryStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000000
-    classDef workflowStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#000000
-    classDef outputStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000000
-
-    class InterviewFolder,EmailClassifier,EntityExtractor,KeywordExtractor,MemoryCheck emailStyle
-    class ResearchCoordinator,CompanyResearch,RoleResearch,InterviewerResearch,QualityReflection researchStyle
-    class GuideGenerator,TechnicalPrep,InterviewerInsights,StrategicQuestions,CitationEngine prepStyle
-    class TavilyCache,OpenAICache,CacheManager cacheStyle
-    class InterviewStore,ResumeMemory,SharedMemory memoryStyle
-    class MainWorkflow,WorkflowRunner workflowStyle
-    class FileOutput,TerminalFeedback outputStyle
-```
-
----
-### Key Features Highlighted in This Flowchart
-
-#### **3-Pipeline Architecture**
-- **Email Pipeline**: Classification, entity extraction, memory management
-- **Deep Research Pipeline**: Multi-agent research with Tavily API integration
-- **Prep Guide Pipeline**: Personalized guide generation with citations
-
-#### **Cache Management Systems**
-- **Tavily Cache**: Research query caching for cost optimization (`cache/tavily/`)
-- **OpenAI Cache**: Response caching for guide generation (`.openai_cache/`)
-- **Cache Manager CLI**: Centralized cache monitoring and management (`workflows/cache_manager.py`)
-
-#### **Memory Systems**
-- **Interview Store**: SQLite-based deduplication and status tracking
-- **Shared Memory**: Cross-agent context synchronization
-
-#### **API Integrations**
-- **Tavily API**: Web search and company intelligence (`api/run_tavily.py`)
-- **OpenAI API**: Guide generation and content creation (`shared/openai_cache.py`)
-
-#### **Main Entry Points**
-- **Interview Prep Workflow**: `workflows/interview_prep_workflow.py`
-- **Cache Manager**: `workflows/cache_manager.py --status`
-- **Workflow Runner**: `workflows/workflow_runner.py`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
