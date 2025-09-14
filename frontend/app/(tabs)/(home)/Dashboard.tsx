@@ -2,6 +2,8 @@ import { SafeAreaView, Text, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { getFoodStats } from "../../../services/foodStatsService";
 
+
+
 export default function Dashboard() {
   const [stats, setStats] = useState({ weekly: 0, lifetime: 0 });
 

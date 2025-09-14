@@ -1,9 +1,9 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import SearchBar from '../../../components/SearchBar';
-import { fetchUserRecipes, Recipe } from '../../../services/recipeService';
+import RecipeCard from './RecipeCard';
+import { fetchUserRecipes, Recipe, saveRecipeToSupabase, deleteRecipeFromSupabase } from '../../../services/recipeService';
 
 function SavedRecipesScreen({ userId }: { userId: string }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -27,22 +27,20 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
     loadRecipes();
   }, [loadRecipes]);
 
-
-
   const filteredRecipes = recipes.filter(recipe =>
     recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderRecipeCard = ({ item }: { item: Recipe }) => (
-    <TouchableOpacity style={styles.card} onPress={() => {}}>
-      <Text style={styles.cardTitle}>{item.title}</Text>
-      <View style={styles.metricRow}>
-        <Text style={styles.metric}>⏱️ {item.cook_time}</Text>
-        <Text style={styles.metric}>🍽️ {item.servings} servings</Text>
-        <Text style={styles.metric}>📊 {item.difficulty}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const handleDelete = async (recipe: Recipe) => {
+    try {
+      const result = await deleteRecipeFromSupabase(recipe, userId);
+      if (result.success) {
+        setRecipes((prevRecipes) => prevRecipes.filter((r) => r.id !== recipe.id));
+      }
+    } catch (error) {
+      console.error("Error deleting recipe:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -61,7 +59,10 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+    >
       <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
       {filteredRecipes.length === 0 ? (
         <View style={styles.centered}>
@@ -71,20 +72,20 @@ function SavedRecipesScreen({ userId }: { userId: string }) {
           </Text>
         </View>
       ) : (
-        <FlatList
-          data={filteredRecipes}
-          renderItem={renderRecipeCard}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.list}
-        />
+        <View style={styles.list}>
+          {filteredRecipes.map((item) => (
+            <RecipeCard key={item.id} item={item} userId={userId} onDelete={handleDelete} />
+          ))}
+        </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 15,
     backgroundColor: '#e9f5ec',
   },
   centered: {
@@ -93,35 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   list: {
-    padding: 15,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1b4332',
-    marginBottom: 8,
-  },
-  metricRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#f0fff4',
-    borderRadius: 8,
-    padding: 8,
-  },
-  metric: {
-    fontSize: 14,
-    color: '#2d6a4f',
+    paddingBottom: 20,
   },
   emptyText: {
     fontSize: 16,
