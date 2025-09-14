@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Image,
@@ -8,29 +8,18 @@ import {
   Text,
   StatusBar,
   Platform,
-} from 'react-native';
-
-const images = [
-  { id: '1', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'onShelf' },
-  { id: '2', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf'  },
-  { id: '3', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge'  },
-  { id: '4', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#4E944F', foodLocation: 'fridge' },
-  { id: '5', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'fridge'  },
-  { id: '6', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf'   },
-  { id: '7', uri: 'https://placekitten.com/200/200', name: 'apple', color: '#B4E197', foodLocation: 'fridge' },
-  { id: '8', uri: 'https://placekitten.com/201/201', name: 'orange', color: '#A0D995', foodLocation: 'onShelf'  },
-  { id: '9', uri: 'https://placekitten.com/202/202', name: 'lettuce', color: '#83BD75', foodLocation: 'fridge'  },
-  { id: '10', uri: 'https://placekitten.com/203/203', name: 'meat', color: '#6cb06dff', foodLocation: 'freezer' },
-  { id: '11', uri: 'https://placekitten.com/204/204', name: 'cod', color: '#B4E197', foodLocation: 'freezer'  },
-  { id: '12', uri: 'https://placekitten.com/205/205', name: 'bananas', color: '#A0D995', foodLocation: 'onShelf' },
-];
+  ActivityIndicator,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ import
+import { getItems, Item } from "../../../services/items"
+ import { supabase } from "../../../supabaseClient";
 
 const numColumns = 3;
 const cardMargin = 16;
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 const imageSize = (screenWidth - cardMargin * (numColumns + 1)) / numColumns;
 
-function FruitCard({
+function ItemCard({
   name,
   color,
   uri,
@@ -48,24 +37,46 @@ function FruitCard({
 }
 
 export default function Index() {
-  // ✅ Moved here
-  const [viewMode, setViewMode] = useState<'shelf' | 'fridge' | 'freezer'>('shelf');
+  const [viewMode, setViewMode] = useState<"S" | "F" | "R">("S");
+  const [items, setItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+
+// inside useEffect:
+useEffect(() => {
+  const fetchItems = async () => {
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        console.warn("⚠️ No user found");
+        setItems([]);
+        return;
+      }
+
+      const user_uuid = data.user.id; // ✅ same as in ScanReceiptScreen
+      const fetchedItems = await getItems(user_uuid);
+      setItems(fetchedItems);
+
+    } catch (err) {
+      console.error("Error fetching items:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchItems();
+}, []);
 
 
-const locationMap = {
-  shelf: 'onShelf',
-  fridge: 'fridge',
-  freezer: 'freezer',
-};
-
-const filteredImages = images.filter(item => item.foodLocation === locationMap[viewMode]);
-
-
-
+  // ✅ Only show items for the active location
+  const filteredItems = items.filter(
+    (item) => item.storage_location === viewMode
+  );
 
   const rows = [];
-  for (let i = 0; i < filteredImages.length; i += numColumns) {
-    rows.push(filteredImages.slice(i, i + numColumns));
+  for (let i = 0; i < filteredItems.length; i += numColumns) {
+    rows.push(filteredItems.slice(i, i + numColumns));
   }
 
   return (
@@ -75,63 +86,56 @@ const filteredImages = images.filter(item => item.foodLocation === locationMap[v
 
       {/* Toggle buttons */}
       <View style={styles.toggleContainer}>
-        <Text
-          style={[
-            styles.toggleButton,
-            viewMode === 'shelf' && styles.activeToggleButton,
-          ]}
-          onPress={() => setViewMode('shelf')}
-        >
-          Shelf
-        </Text>
-        <Text
-          style={[
-            styles.toggleButton,
-            viewMode === 'fridge' && styles.activeToggleButton,
-
-          ]}
-          onPress={() => setViewMode('fridge')}
-        >
-          Fridge
-        </Text>
-        <Text
-          style={[
-          styles.toggleButton,
-          viewMode === 'freezer' && styles.activeToggleButton,
-          ]}
-          onPress={() => setViewMode('freezer')}
-        >
-          Freezer
-        </Text>
-      </View>
-    <View
-      style={[
-        styles.shelfArea,
-        viewMode === 'fridge' && styles.fridgeBackground, // Apply gray background only in fridge mode
-        viewMode === 'freezer' && [styles.fridgeBackground, styles.freezerGlowContainer],
-      ]}
-    >
-
-      <FlatList
-        data={rows}
-        keyExtractor={(_, index) => `row-${index}`}
-        renderItem={({ item: rowItems }) => (
-          <View style={styles.shelfRow}>
-            {rowItems.map((item) => (
-              <FruitCard key={item.id} name={item.name} color={item.color} uri={item.uri} />
-            ))}
-           <View
+        {(["S", "R", "F"] as const).map((mode) => (
+          <Text
+            key={mode}
             style={[
-          styles.shelfLine,
-          viewMode === 'fridge' && { backgroundColor: '#e4fdf4ff' }, // ⬅️ override color if fridge
-          viewMode === 'freezer' && { backgroundColor: '#e4fdf4ff'},
+              styles.toggleButton,
+              viewMode === mode && styles.activeToggleButton,
+            ]}
+            onPress={() => setViewMode(mode)}
+          >
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </Text>
+        ))}
+      </View>
+
+      <View
+        style={[
+          styles.shelfArea,
+          viewMode === "R" && styles.fridgeBackground,
+          viewMode === "F" && [styles.fridgeBackground, styles.freezerGlowContainer],
         ]}
-      />
-    </View>
+      >
+        {loading ? (
+          <ActivityIndicator size="large" color="#2C6E49" />
+        ) : (
+          <FlatList
+            data={rows}
+            keyExtractor={(_, index) => `row-${index}`}
+            renderItem={({ item: rowItems }) => (
+              <View style={styles.shelfRow}>
+                {rowItems.map((item) => (
+                  <ItemCard
+                    key={item.id}
+                    name={item.name}
+                    color="#B4E197"
+                    uri="https://placekitten.com/200/200"
+                  />
+                ))}
+                <View
+                  style={[
+                    styles.shelfLine,
+                    viewMode === "R" && { backgroundColor: "#e4fdf4ff" },
+                    viewMode === "F" && { backgroundColor: "#e4fdf4ff" },
+                  ]}
+                />
+              </View>
+            )}
+            contentContainerStyle={styles.listContent}
+          />
         )}
-        contentContainerStyle={styles.listContent}
-      />
-    </View>
+      </View>
     </View>
   );
 }
@@ -169,7 +173,6 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     overflow: 'hidden',
     backgroundColor: '#D0F0C0',
-
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 4 },
@@ -219,26 +222,23 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   shelfArea: {
-  flex: 1,
-},
-
-fridgeBackground: {
-  backgroundColor: '#abcdbcff', // Light gray background
-  borderWidth: 3,
-   borderColor: '#ffffffff',
-  borderRadius: 20,
-},
-freezerGlowContainer: {
-  borderWidth: 3,
-  borderColor: '#98eef0ff',
-  shadowColor: '#8de4faff',
-  shadowOffset: { width: 0, height: 0 },
-  shadowOpacity: 1,
-  shadowRadius: 15,
-  elevation: 15,
-  borderRadius: 20,
-  margin: 5,  // optional: give some spacing around glow
-},
-
-
+    flex: 1,
+  },
+  fridgeBackground: {
+    backgroundColor: '#abcdbcff',
+    borderWidth: 3,
+    borderColor: '#ffffffff',
+    borderRadius: 20,
+  },
+  freezerGlowContainer: {
+    borderWidth: 3,
+    borderColor: '#98eef0ff',
+    shadowColor: '#8de4faff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    elevation: 15,
+    borderRadius: 20,
+    margin: 5,
+  },
 });
