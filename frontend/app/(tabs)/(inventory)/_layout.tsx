@@ -10,9 +10,9 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ import
-import { getItems, Item } from "../../../services/items"
- import { supabase } from "../../../supabaseClient";
+import { useIsFocused } from "@react-navigation/native";
+import { getItems, Item } from "../../../services/items";
+import { supabase } from "../../../supabaseClient";
 
 const numColumns = 3;
 const cardMargin = 16;
@@ -37,37 +37,35 @@ function ItemCard({
 }
 
 export default function Index() {
+  const isFocused = useIsFocused(); // 👈 detect when screen is active
   const [viewMode, setViewMode] = useState<"S" | "F" | "R">("S");
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
-// inside useEffect:
-useEffect(() => {
-  const fetchItems = async () => {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data.user) {
+          console.error("No logged-in user found", error);
+          return;
+        }
 
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) {
-        console.warn("⚠️ No user found");
-        setItems([]);
-        return;
+        const user_uuid = data.user.id; // 👈 get logged-in user UUID
+        const fetchedItems = await getItems(user_uuid);
+        setItems(fetchedItems);
+      } catch (err) {
+        console.error("Error fetching items:", err);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const user_uuid = data.user.id; // ✅ same as in ScanReceiptScreen
-      const fetchedItems = await getItems(user_uuid);
-      setItems(fetchedItems);
-
-    } catch (err) {
-      console.error("Error fetching items:", err);
-    } finally {
-      setLoading(false);
+    if (isFocused) {
+      fetchItems(); // 👈 refetch every time screen is focused
     }
-  };
-
-  fetchItems();
-}, []);
-
+  }, [isFocused]);
 
   // ✅ Only show items for the active location
   const filteredItems = items.filter(
@@ -104,7 +102,10 @@ useEffect(() => {
         style={[
           styles.shelfArea,
           viewMode === "R" && styles.fridgeBackground,
-          viewMode === "F" && [styles.fridgeBackground, styles.freezerGlowContainer],
+          viewMode === "F" && [
+            styles.fridgeBackground,
+            styles.freezerGlowContainer,
+          ],
         ]}
       >
         {loading ? (
@@ -119,8 +120,8 @@ useEffect(() => {
                   <ItemCard
                     key={item.id}
                     name={item.name}
-                    color="#B4E197"
-                    uri="https://placekitten.com/200/200"
+                    color="#B4E197" // 🔥 can later map based on category
+                    uri="https://placekitten.com/200/200" // 🔥 replace with real item images if available
                   />
                 ))}
                 <View
@@ -143,17 +144,17 @@ useEffect(() => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EAF8E6',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 40 : 40,
+    backgroundColor: "#EAF8E6",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight || 40 : 40,
   },
   header: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2C6E49',
+    fontWeight: "bold",
+    color: "#2C6E49",
     paddingHorizontal: 16,
     paddingBottom: 12,
-    textAlign: 'center',
-    fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'sans-serif-medium',
+    textAlign: "center",
+    fontFamily: Platform.OS === "ios" ? "Avenir-Heavy" : "sans-serif-medium",
     paddingTop: 40,
   },
   listContent: {
@@ -161,49 +162,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: -10,
   },
   shelfRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: cardMargin,
     paddingTop: 20,
-    position: 'relative',
+    position: "relative",
   },
   card: {
     width: imageSize,
     marginHorizontal: cardMargin / 2,
     borderRadius: 18,
-    overflow: 'hidden',
-    backgroundColor: '#D0F0C0',
-    shadowColor: '#000',
+    overflow: "hidden",
+    backgroundColor: "#D0F0C0",
+    shadowColor: "#000",
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 6,
     elevation: 6,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: imageSize,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   cardText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
-    color: '#2C6E49',
-    fontWeight: '600',
+    color: "#2C6E49",
+    fontWeight: "600",
     paddingVertical: 8,
   },
   shelfLine: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -20,
     left: 0,
     right: 0,
     height: 30,
-    backgroundColor: '#792525ff',
+    backgroundColor: "#792525ff",
     borderRadius: 2,
     zIndex: -1,
   },
   toggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     paddingVertical: 10,
   },
   toggleButton: {
@@ -213,27 +214,27 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#2C6E49',
-    color: '#2C6E49',
-    fontWeight: '600',
+    borderColor: "#2C6E49",
+    color: "#2C6E49",
+    fontWeight: "600",
   },
   activeToggleButton: {
-    backgroundColor: '#2C6E49',
-    color: '#FFFFFF',
+    backgroundColor: "#2C6E49",
+    color: "#FFFFFF",
   },
   shelfArea: {
     flex: 1,
   },
   fridgeBackground: {
-    backgroundColor: '#abcdbcff',
+    backgroundColor: "#abcdbcff",
     borderWidth: 3,
-    borderColor: '#ffffffff',
+    borderColor: "#ffffffff",
     borderRadius: 20,
   },
   freezerGlowContainer: {
     borderWidth: 3,
-    borderColor: '#98eef0ff',
-    shadowColor: '#8de4faff',
+    borderColor: "#98eef0ff",
+    shadowColor: "#8de4faff",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 15,

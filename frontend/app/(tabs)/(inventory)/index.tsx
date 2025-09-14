@@ -12,26 +12,31 @@ import {
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { getItems, Item } from "../../../services/items";
-import { supabase } from "../../../supabaseClient"
+import { supabase } from "../../../supabaseClient";
 
 const numColumns = 3;
-const cardMargin = 16;
+const cardMargin = 12; // slightly smaller margin
 const screenWidth = Dimensions.get("window").width;
-const imageSize = (screenWidth - cardMargin * (numColumns + 1)) / numColumns;
+const imageSize = (screenWidth - cardMargin * (numColumns + 1)) / numColumns * 0.85; // scale down to 85%
 
 function ItemCard({
   name,
   color,
   uri,
+  estimated_expiration,
 }: {
   name: string;
   color: string;
   uri: string;
+  estimated_expiration?: string | null;
 }) {
   return (
     <View style={[styles.card, { backgroundColor: color }]}>
       <Image source={{ uri }} style={styles.image} />
       <Text style={styles.cardText}>{name}</Text>
+      {estimated_expiration && (
+        <Text style={styles.expiryText}>Expires: {estimated_expiration}</Text>
+      )}
     </View>
   );
 }
@@ -52,7 +57,7 @@ export default function Index() {
           return;
         }
 
-        const user_uuid = data.user.id; // 👈 get logged-in user UUID
+        const user_uuid = data.user.id;
         const fetchedItems = await getItems(user_uuid);
         setItems(fetchedItems);
       } catch (err) {
@@ -63,11 +68,11 @@ export default function Index() {
     };
 
     if (isFocused) {
-      fetchItems(); // 👈 refetch every time screen is focused
+      fetchItems(); // refresh whenever tab is focused
     }
   }, [isFocused]);
 
-  // ✅ Only show items for the active location
+  // Only show items for the active storage location
   const filteredItems = items.filter(
     (item) => item.storage_location === viewMode
   );
@@ -120,8 +125,9 @@ export default function Index() {
                   <ItemCard
                     key={item.id}
                     name={item.name}
-                    color="#B4E197" // 🔥 can later map based on category
-                    uri="https://placekitten.com/200/200" // 🔥 replace with real item images if available
+                    color="#B4E197"
+                    uri="https://placekitten.com/200/200"
+                    estimated_expiration={item.estimated_expiration}
                   />
                 ))}
                 <View
@@ -191,6 +197,13 @@ const styles = StyleSheet.create({
     color: "#2C6E49",
     fontWeight: "600",
     paddingVertical: 8,
+  },
+  expiryText: {
+    textAlign: "center",
+    fontSize: 14,
+    color: "#555",
+    fontStyle: "italic",
+    marginBottom: 8,
   },
   shelfLine: {
     position: "absolute",
