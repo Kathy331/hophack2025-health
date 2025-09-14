@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Dict, Any, List
 from uuid import UUID
-from app.services.item_service import insert_items_into_supabase, supabase
-from app.services.gem_service import predict_expirations
+from services.item_service import insert_items_into_supabase, supabase
+from services.gem_service import predict_expirations
 
 class ItemSchema(BaseModel):
     id: int
@@ -12,8 +12,6 @@ class ItemSchema(BaseModel):
     estimated_expiration: str | None
     price: float
     user_uuid: str
-
-router = APIRouter()
 
 router = APIRouter()
 
