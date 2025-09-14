@@ -1,7 +1,7 @@
 // services/items.ts
 import { Platform } from "react-native";
 
-const backendUrl = "https://8c13de897f19.ngrok-free.app"; // same as recipes
+const backendUrl = "https://4b14141d3b34.ngrok-free.app"; // same as recipes
 
 export const API_BASE = `${backendUrl}/items`;
 
