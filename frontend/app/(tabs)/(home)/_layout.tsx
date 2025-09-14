@@ -52,7 +52,7 @@ type Section = {
 // --- Sections Data ---
 const remindersSections: Section[] = [
   {
-    title: 'Reminders',
+    title: '🌱 Reminders',
     data: [
       {
         key: 'banana',
@@ -89,7 +89,7 @@ const remindersSections: Section[] = [
 
 const foodWaste: Section[] = [
   {
-    title: 'Food Waste',
+    title: '🌱 Food Waste',
     data: [
       {
         key: 'apple-fw',
@@ -109,7 +109,7 @@ const foodWaste: Section[] = [
 
 const costs: Section[] = [
   {
-    title: 'Costs',
+    title: '🌱 Costs',
     data: [
       {
         key: 'apple-cost',
@@ -275,12 +275,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   header: {
+    paddingTop: 20,
+    padding: 20,
     fontSize: 22,
     fontWeight: 'bold',
     color: '#2C6E49',
     paddingHorizontal: 8,
     paddingVertical: 4,
     backgroundColor: '#EAF8E6',
+    textAlign: "center",
   },
   sectionSeparator: {
     height: 8,

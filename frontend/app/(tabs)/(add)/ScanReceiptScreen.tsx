@@ -98,8 +98,8 @@ export default function ScanReceiptScreen() {
 
   const showReceiptOptions = () => {
     Alert.alert('Add Receipt', 'How would you like to add your receipt?', [
-      { text: '📸 Scan with Camera', onPress: scanReceiptWithCamera },
-      { text: '🖼️ Select from Photos', onPress: selectReceiptFromLibrary },
+      { text: 'Scan with Camera', onPress: scanReceiptWithCamera },
+      { text: 'Select from Photos', onPress: selectReceiptFromLibrary },
       { text: 'Cancel', style: 'cancel' },
     ]);
   };

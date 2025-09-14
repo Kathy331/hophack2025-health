@@ -1,14 +1,18 @@
 from datetime import datetime
 from supabase import create_client, Client
 import os
+from dotenv import load_dotenv
 from typing import Optional, Dict, Any
 import asyncio
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")  # service role key for server-side
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Load environment variables
+load_dotenv()
+
+# Initialize Supabase client
+supabase: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
 async def insert_items_into_supabase(user_uuid: str, items_json: Dict[str, Any]) -> Dict[str, Any]:
+    """Insert items into Supabase with user association"""
     rows_to_insert = []
 
     for item in items_json.get("items", []):

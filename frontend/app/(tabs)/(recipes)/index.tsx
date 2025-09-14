@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -7,6 +7,8 @@ import {
   View,
   Text,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { supabase } from '../../../supabaseClient';
 import AddRecipeScreen from './AddRecipeScreen';
 import SavedRecipesScreen from './SavedRecipesScreen';
 
@@ -14,13 +16,30 @@ type TabType = 'add' | 'saved';
 
 export default function RecipesScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('add');
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id || null);
+    };
+    getUser();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'add':
         return <AddRecipeScreen />;
       case 'saved':
-        return <SavedRecipesScreen />;
+        if (!userId) {
+          return (
+            <View style={styles.centered}>
+              <MaterialIcons name="lock" size={48} color="#52b788" />
+              <Text style={styles.loginMessage}>Please log in to view saved recipes</Text>
+            </View>
+          );
+        }
+        return <SavedRecipesScreen userId={userId} />;
       default:
         return <AddRecipeScreen />;
     }
@@ -79,6 +98,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f1f7f3',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f1f7f3',
+  },
+  loginMessage: {
+    fontSize: 16,
+    color: '#2d6a4f',
+    marginTop: 12,
+    textAlign: 'center',
   },
   toggleContainer: {
     flexDirection: 'row',

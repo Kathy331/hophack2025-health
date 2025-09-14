@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from routes import gem_route, user_route 
-from routes import gem_route, user_route, items_route
+from app.routes import gem_route, user_route
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI()
 
@@ -14,9 +18,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Import all routes
+from app.routes import gem_route, user_route, items_route
+
 # Include routers
 app.include_router(gem_route.router, prefix="/gem", tags=["gem"])
-app.include_router(user_route.router, prefix="/user", tags=["user"])  # new user endpoints
+app.include_router(user_route.router, prefix="/user", tags=["user"])
 app.include_router(items_route.router, prefix="/items", tags=["items"])
 
 @app.get("/")

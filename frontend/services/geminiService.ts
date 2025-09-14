@@ -1,5 +1,6 @@
 const backendUrl = "https://d647843159d4.ngrok-free.app";
 
+
 export const sendReceiptToBackend = async (imageUri: string) => {
   try {
     const formData = new FormData();
@@ -43,7 +44,7 @@ export interface FinalizeItemsPayload {
 
 export const finalizeItems = async (payload: FinalizeItemsPayload) => {
   try {
-    const response = await fetch(`${backendUrl}/item/finalize-items`, {
+    const response = await fetch(`${backendUrl}/items/finalize-items`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +66,6 @@ export const finalizeItems = async (payload: FinalizeItemsPayload) => {
 };
 
 // analyzeImageWithGemini remains unchanged
-
 
 export const analyzeImageWithGemini = async (imageUri: string) => {
   try {
