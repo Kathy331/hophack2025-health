@@ -73,6 +73,8 @@ const filteredImages = images.filter(item => item.foodLocation === locationMap[v
       <StatusBar barStyle="dark-content" backgroundColor="#EAF8E6" />
       <Text style={styles.header}>🌱 Inventory</Text>
 
+       <View style={styles.divider}/>
+
       {/* Toggle buttons */}
       <View style={styles.toggleContainer}>
         <Text
@@ -202,6 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 10,
+    paddingTop: 20,
   },
   toggleButton: {
     fontSize: 16,
@@ -239,6 +242,10 @@ freezerGlowContainer: {
   borderRadius: 20,
   margin: 5,  // optional: give some spacing around glow
 },
+divider:{
+  height: 1,
+  backgroundColor: '#3f663fff',
+}
 
 
 });
