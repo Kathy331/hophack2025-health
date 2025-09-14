@@ -200,9 +200,11 @@ Once the app is running, you can:
 
 Kathy Chen - [@Linkedin](https://www.linkedin.com/in/kathy-chen-b35b532a6/) - email: kathychen331@outlook.com
 
-Grace Chen - [@Linkedin](https://www.linkedin.com/in/chen-p-grace/) - email: chenpgrace1@gmail.com
+Isaac Roy - [@Linkedin](https://www.linkedin.com/in/isaac-roy-b21567290/) - email: 
 
-Julianna Bracamonte - [@Linkedin](https://www.linkedin.com/in/julianna-bracamonte-759644237/) - email: bracamontejulianna@gmail.com 
+Curtis L- [@Linkedin](https://www.linkedin.com/in/curtis-l-92674a30b/) - email: 
+
+Trina Cheng - [@Linkedin](https://www.linkedin.com/in/trina-cheng-48697a329/) - email: 
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -210,10 +212,10 @@ Julianna Bracamonte - [@Linkedin](https://www.linkedin.com/in/julianna-bracamont
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
  
-* [Dandilyonn SEEDS Program](https://www.dandilyonn.com/)
-*  Streamlit for their amazing framework  
-*  OpenAI for language models powering the agents  
-*  Tavily for intelligent web search APIs 
+* [HopHack 2025](https://hophacks.com/#cover-section)
+* [Google Gemini](https://aistudio.google.com/)
+* [Supabase](https://supabase.com/)
+* [FastAPI](https://fastapi.tiangolo.com/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
