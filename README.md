@@ -181,7 +181,8 @@ Once the app is running, you can:
 - **Search and filter**: Quickly find specific food items by name, category, or expiration status -->
 
 <!-- Add -->
-- **Add food items**: Scan receipts or upload images to automatically add food items to your inventory with AI-powered analysis
+- **Add food items via scanning food**: Upload images of food items, your fridge to automatically add food items to your inventory with Gemini AI-powered analysis [[Demo]](https://github.com/user-attachments/assets/3f3d3211-3427-4a20-be31-9572b0e0f675)
+- **Add food items via scanning receipts**: Scan receipts to automatically add food items to your inventory with AI-powered analysis [[Demo]](https://github.com/user-attachments/assets/4e63ecf2-7801-44eb-8d3b-b5e146a1b69d)
 - **Select storage location**: Specify if the food is stored in the refrigerator, freezer, or shelf for accurate shelf life calculations [[Demo (0.35)]](https://github.com/user-attachments/assets/8caf4a1a-ff43-4722-9e73-d73f2f008478)
 - **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you [[Demo (0.35)]](https://github.com/user-attachments/assets/8caf4a1a-ff43-4722-9e73-d73f2f008478)
 
