@@ -200,7 +200,7 @@ Once the app is running, you can:
 
 Kathy Chen - [@Linkedin](https://www.linkedin.com/in/kathy-chen-b35b532a6/) - email: kathychen331@outlook.com
 
-Isaac Roy - [@Linkedin](https://www.linkedin.com/in/isaac-roy-b21567290/) - email: 
+Isaac Roy - [@Linkedin](https://www.linkedin.com/in/isaac-roy-b21567290/) - email: isaac.roy107@gmail.com
 
 Curtis L- [@Linkedin](https://www.linkedin.com/in/curtis-l-92674a30b/) - email: 
 
