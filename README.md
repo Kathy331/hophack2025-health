@@ -186,7 +186,8 @@ Once the app is running, you can:
 - **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you
 
 <!-- Recipes -->
-- **paste in a YouTube link**: Get a full recipe generated, ingredient list, from any YouTube cooking video
+- **paste in a YouTube link**: Get a full recipe generated, ingredient list, from any YouTube cooking video - [[Demo]](https://github.com/user-attachments/assets/6468ef15-187f-485b-acb5-a57a06b43e6b)
+
 <!-- Profile -->
 - **View and edit your profile**: Manage your account settings, preferences, and personal information
 <!-- - **Track your savings**: See how much money and food you have saved by using the app over time
