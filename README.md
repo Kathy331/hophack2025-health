@@ -170,12 +170,12 @@ Our app (Gobble) is your one-stop shop for food management. It has a dashboard f
 <!--[demo](https://youtu.be/B0gPpqxy5SE)-->
 Once the app is running, you can:
 <!-- Home Page-->
-- **Sign up / Log in**: Create a new account or log in with your existing credentials
+- **Sign up / Log in**
 - **View your dashboard**: See an overview of your food inventory, savings, and recent activity
-- **Smart recipe suggestions**: Get personalized recipe ideas based on your available ingredients, and soon to be expired food items
+- **Smart recipe suggestions**: Get personalized recipe ideas based on your available ingredients, and soon-to-expire food items
 
 <!-- Inventory -->
-- **View your inventory**: See a list of all food items you have added in shelf, refrigerator, and freezer
+- **View your inventory**: See a list of all food items you have added in shelf, refrigerator, and freezer 
 - **Track expiration dates**: Monitor the freshness of your food with automatic expiration date tracking and notifications
 <!-- - **Update quantities**: Easily adjust the quantity of each food item as you use or add
 - **Search and filter**: Quickly find specific food items by name, category, or expiration status -->
@@ -183,10 +183,10 @@ Once the app is running, you can:
 <!-- Add -->
 - **Add food items**: Scan receipts or upload images to automatically add food items to your inventory with AI-powered analysis
 - **Select storage location**: Specify if the food is stored in the refrigerator, freezer, or shelf for accurate shelf life calculations
-- **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you
+- **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you [[Demo]](https://github.com/user-attachments/assets/b372253f-f9d0-45fa-886f-5471e1b897d6)
 
 <!-- Recipes -->
-- **paste in a YouTube link**: Get a full recipe generated, ingredient list, from any YouTube cooking video - [[Demo]](https://github.com/user-attachments/assets/6468ef15-187f-485b-acb5-a57a06b43e6b)
+- **paste in a YouTube link**: Get a full recipe generated, ingredient list, from any YouTube cooking video - [[Demo (0.35)]](https://github.com/user-attachments/assets/6468ef15-187f-485b-acb5-a57a06b43e6b)
 
 <!-- Profile -->
 - **View and edit your profile**: Manage your account settings, preferences, and personal information
