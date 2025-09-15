@@ -182,8 +182,8 @@ Once the app is running, you can:
 
 <!-- Add -->
 - **Add food items**: Scan receipts or upload images to automatically add food items to your inventory with AI-powered analysis
-- **Select storage location**: Specify if the food is stored in the refrigerator, freezer, or shelf for accurate shelf life calculations
-- **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you [[Demo (0.35)]](https://github.com/user-attachments/assets/b372253f-f9d0-45fa-886f-5471e1b897d6)
+- **Select storage location**: Specify if the food is stored in the refrigerator, freezer, or shelf for accurate shelf life calculations [[Demo (0.35)]](https://github.com/user-attachments/assets/8caf4a1a-ff43-4722-9e73-d73f2f008478)
+- **smart storage location suggestions**: Based on the food item, the app autofill the best storage location for you [[Demo (0.35)]](https://github.com/user-attachments/assets/8caf4a1a-ff43-4722-9e73-d73f2f008478)
 
 <!-- Recipes -->
 - **paste in a YouTube link**: Get a full recipe generated, ingredient list, from any YouTube cooking video - [[Demo]](https://github.com/user-attachments/assets/6468ef15-187f-485b-acb5-a57a06b43e6b)
