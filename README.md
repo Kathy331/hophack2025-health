@@ -22,7 +22,7 @@
     <br />
     <a href="https://devpost.com/software/gobble-ru6bdy?ref_content=user-portfolio&ref_feature=in_progress">View DevPost</a>
     ·
-    <a href="test">View Demo</a>
+    <a href="https://www.canva.com/design/DAGy37EHCUo/WNQqWgbtuG1zE2Q9tVgSyA/edit?utm_content=DAGy37EHCUo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton">View Presentation and Demo</a>
     ·
     <a href="https://github.com/Kathy331/hophack2025-health/issues/new?labels=bug&template=bug-report---.md">Report Bugs</a>
     ·
